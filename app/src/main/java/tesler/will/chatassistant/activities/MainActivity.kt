@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.activities.main
+package tesler.will.chatassistant.activities
 
 import android.Manifest.permission.RECORD_AUDIO
 import android.os.Bundle
@@ -19,12 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.loadKoinModules
+import org.koin.core.context.startKoin
 import org.koin.core.context.unloadKoinModules
 import tesler.will.chatassistant.BuildConfig
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant.components.Card
-import tesler.will.chatassistant.ui.theme.ChatAssistantTheme
+import tesler.will.chatassistant.di.main.mainModule
+import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -76,27 +80,39 @@ fun PermissionWrapper() {
     }
 
     when (permissionsAccepted) {
-        true -> Main()
+        true -> MainThemed()
         false -> Unit
     }
 }
 
 @Composable
 fun Main() {
-    ChatAssistantTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            contentAlignment = Alignment.BottomCenter,
-        ) {
-            Card()
-        }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background),
+        contentAlignment = Alignment.BottomCenter,
+    ) {
+        Card()
+    }
+}
+
+@Composable
+fun MainThemed() {
+    AppTheme {
+        Main()
     }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xF00, device = Devices.NEXUS_5)
 @Composable
 fun DefaultPreview() {
-    Main()
+    val context = LocalContext.current
+    startKoin {
+        androidContext(context)
+        modules(mainTestModule)
+    }
+    AppTheme(darkTheme = true) {
+        Main()
+    }
 }

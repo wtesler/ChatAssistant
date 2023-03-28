@@ -5,20 +5,25 @@ import android.content.Intent
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.widget.Toast
+import tesler.will.chatassistant.speech.ISpeechManager.*
 
-class SpeechManager(private val context: Context) {
+class SpeechManager(private val context: Context) : ISpeechManager {
 
     private var speechRecognizer: SpeechRecognizer? = null
 
-    private var text: String? = null
+    private var isStarted: Boolean? = null
     private var isFinished: Boolean? = null
+    private var text: String? = null
+    private var amplitude: Float? = null
     private var errorCode: Int? = null
 
-    private val textListeners = HashMap<(String?) -> Unit, (String?) -> Unit>()
-    private val finishedListeners = HashMap<() -> Unit, () -> Unit>()
-    private val errorListeners = HashMap<(Int?) -> Unit, (Int?) -> Unit>()
+    private val startedListeners = mutableListOf<SpeechStartedListener>()
+    private val finishedListeners = mutableListOf<SpeechFinishedListener>()
+    private val textListeners = mutableListOf<SpeechTextListener>()
+    private val amplitudeListeners = mutableListOf<SpeechAmplitudeListener>()
+    private val errorListeners = mutableListOf<SpeechErrorListener>()
 
-    fun start() {
+    override fun start() {
         if (speechRecognizer != null) {
             throw Exception("Already started. You must call stop first.")
         }
@@ -30,7 +35,16 @@ class SpeechManager(private val context: Context) {
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
 
-        speechRecognizer?.setRecognitionListener(SpeechListener(::onText, ::onFinished, ::onError))
+        speechRecognizer?.setRecognitionListener(
+            SpeechListener(
+                ::onReady,
+                ::onStarted,
+                ::onFinished,
+                ::onText,
+                ::onAmplitude,
+                ::onError
+            )
+        )
 
         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
@@ -46,71 +60,113 @@ class SpeechManager(private val context: Context) {
         speechRecognizer?.startListening(recognizerIntent)
     }
 
-    fun stop() {
+    override fun stop() {
         if (speechRecognizer != null) {
             speechRecognizer?.destroy()
             speechRecognizer = null
         }
     }
 
-    fun clear() {
+    override fun clear() {
         stop()
-        text = null;
-        isFinished = null;
-        errorCode = null;
+        isStarted = null
+        isFinished = null
+        text = null
+        amplitude = null
+        errorCode = null
     }
 
-    fun addTextListener(listener: (String?) -> Unit) {
-        textListeners[listener] = listener;
-        if (text != null) {
-            listener(text)
+    override fun addStartedListener(listener: SpeechStartedListener) {
+        startedListeners.add(listener)
+        if (isStarted != null) {
+            listener.onSpeechStarted()
         }
     }
 
-    fun addFinishedListener(listener: () -> Unit) {
-        finishedListeners[listener] = listener;
+    override fun addFinishedListener(listener: SpeechFinishedListener) {
+        finishedListeners.add(listener)
         if (isFinished != null) {
-            listener()
+            listener.onSpeechFinished()
         }
     }
 
-    fun addErrorListener(listener: (Int?) -> Unit) {
-        errorListeners[listener] = listener;
+    override fun addTextListener(listener: SpeechTextListener) {
+        textListeners.add(listener)
+        if (text != null) {
+            listener.onText(text)
+        }
+    }
+
+    override fun addAmplitudeListener(listener: SpeechAmplitudeListener) {
+        amplitudeListeners.add(listener)
+        if (amplitude != null) {
+            listener.onAmplitude(amplitude)
+        }
+    }
+
+    override fun addErrorListener(listener: SpeechErrorListener) {
+        errorListeners.add(listener)
         if (errorCode != null) {
-            listener(errorCode)
+            listener.onError(errorCode)
         }
     }
 
-    fun removeTextListener(listener: (String?) -> Unit) {
-        textListeners.remove(listener);
+    override fun removeStartedListener(listener: SpeechStartedListener) {
+        startedListeners.remove(listener)
     }
 
-    fun removeFinishedListener(listener: () -> Unit) {
-        finishedListeners.remove(listener);
+    override fun removeFinishedListener(listener: SpeechFinishedListener) {
+        finishedListeners.remove(listener)
     }
 
-    fun removeErrorListener(listener: (Int?) -> Unit) {
-        errorListeners.remove(listener);
+    override fun removeTextListener(listener: SpeechTextListener) {
+        textListeners.remove(listener)
     }
 
-    private fun onText(t: String) {
-        text = t
-        for (listener in textListeners.values) {
-            listener(t)
+    override fun removeAmplitudeListener(listener: SpeechAmplitudeListener) {
+        amplitudeListeners.remove(listener)
+    }
+
+    override fun removeErrorListener(listener: SpeechErrorListener) {
+        errorListeners.remove(listener)
+    }
+
+    private fun onReady() {
+
+    }
+
+    private fun onStarted() {
+        isStarted = true
+        for (listener in startedListeners) {
+            listener.onSpeechStarted()
         }
     }
 
     private fun onFinished() {
         isFinished = true
-        for (listener in finishedListeners.values) {
-            listener()
+        for (listener in finishedListeners) {
+            listener.onSpeechFinished()
+        }
+    }
+
+    private fun onText(t: String) {
+        text = t
+        for (listener in textListeners) {
+            listener.onText(t)
+        }
+    }
+
+    private fun onAmplitude(f: Float) {
+        amplitude = f
+        for (listener in amplitudeListeners) {
+            listener.onAmplitude(f)
         }
     }
 
     private fun onError(code: Int) {
         errorCode = code
-        for (listener in errorListeners.values) {
-            listener(code)
+        for (listener in errorListeners) {
+            listener.onError(code)
         }
     }
 }

@@ -5,19 +5,25 @@ import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer.RESULTS_RECOGNITION
 
 public class SpeechListener(
-    val onText: (String) -> Unit,
+    val onReady: () -> Unit,
+    val onStarted: () -> Unit,
     val onFinished: () -> Unit,
+    val onText: (String) -> Unit,
+    val onAmplitude: (Float) -> Unit,
     val onSpeechError: (Int) -> Unit
 ) : RecognitionListener {
 
     override fun onReadyForSpeech(params: Bundle?) {
+        println("SPEECH READY")
     }
 
     override fun onBeginningOfSpeech() {
         println("BEGINNING OF SPEECH")
+        onStarted()
     }
 
     override fun onRmsChanged(rmsdB: Float) {
+        onAmplitude(rmsdB)
     }
 
     override fun onBufferReceived(buffer: ByteArray?) {
@@ -38,7 +44,7 @@ public class SpeechListener(
             onFinished()
             return
         }
-        val stringList = results.getStringArrayList(RESULTS_RECOGNITION) ?: ArrayList<String>();
+        val stringList = results.getStringArrayList(RESULTS_RECOGNITION) ?: ArrayList<String>()
         val words = if (stringList.size > 0) stringList[0] else ""
         onText(words)
         onFinished()
@@ -48,7 +54,7 @@ public class SpeechListener(
         if (partialResults == null) {
             return
         }
-        val stringList = partialResults.getStringArrayList(RESULTS_RECOGNITION) ?: return;
+        val stringList = partialResults.getStringArrayList(RESULTS_RECOGNITION) ?: return
         val words = if (stringList.size > 0) stringList[0] else ""
         onText(words)
     }

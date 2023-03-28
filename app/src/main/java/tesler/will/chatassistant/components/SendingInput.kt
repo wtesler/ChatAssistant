@@ -2,39 +2,41 @@ package tesler.will.chatassistant.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import org.koin.compose.koinInject
-import tesler.will.chatassistant.speech.SpeechManager
-import tesler.will.chatassistant.ui.theme.spacing
+import tesler.will.chatassistant.speech.ISpeechManager
 
 @Composable
 fun SendingInput() {
-    val speechManager = koinInject<SpeechManager>()
+    val speechManager = koinInject<ISpeechManager>()
 
     var text by remember { mutableStateOf("") }
 
-    fun onText(t: String?) {
-        if (t != null) {
-            text = t
+    val speechTextListener = remember {
+        object: ISpeechManager.SpeechTextListener {
+            override fun onText(value: String?) {
+                if (value != null) {
+                    text = value
+                }
+            }
         }
     }
 
     DisposableEffect(Unit) {
-        speechManager.addTextListener(::onText)
+        speechManager.addTextListener(speechTextListener)
         onDispose {
-            speechManager.removeTextListener(::onText)
+            speechManager.removeTextListener(speechTextListener)
         }
     }
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(MaterialTheme.spacing.medium)
+            .fillMaxWidth()
+            .wrapContentHeight()
     ) {
         Column(
 

@@ -1,0 +1,129 @@
+package tesler.will.chatassistant.components.speechinput.indicator
+
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.core.math.MathUtils
+import org.koin.android.ext.koin.androidContext
+import org.koin.compose.koinInject
+import org.koin.core.context.startKoin
+import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.speech.ISpeechManager
+import tesler.will.chatassistant.ui.theme.AppTheme
+import kotlin.math.pow
+
+@Composable
+fun SpeechInputIndicatorDot(
+    durationMs: Int,
+    wobbleDistance: Float,
+    delayMs: Int,
+    amplitudeMultiplier: Float,
+    amplitudePow: Float
+) {
+    val CIRCLE_LENGTH = 10.dp
+    val COLOR = MaterialTheme.colors.onSurface
+    val MAX_STRETCH = 2.8f
+    val STRETCH_SMOOTHING = .6f
+
+    val speechManager = koinInject<ISpeechManager>()
+
+    var yOffset by remember { mutableStateOf(0.dp) }
+    var isSpeechStarted by remember { mutableStateOf(false) }
+    var previousAmplitude by remember { mutableStateOf(0f) }
+    var amplitude by remember { mutableStateOf(0f) }
+    val stretch by remember(isSpeechStarted, amplitude) {
+        derivedStateOf {
+            if (isSpeechStarted) {
+                val clampedAmplitude = MathUtils.clamp(amplitude, -2f, 10f)
+                var amplitudeProgress = (clampedAmplitude + 2f) / 12f
+                amplitudeProgress = amplitudeProgress.pow(amplitudePow)
+                val lerp = ((1 - amplitudeProgress) * 1) + (amplitudeProgress * MAX_STRETCH)
+                lerp * amplitudeMultiplier
+            } else {
+                1f
+            }
+        }
+    }
+
+    val speechStartedListener = remember {
+        object : ISpeechManager.SpeechStartedListener {
+            override fun onSpeechStarted() {
+                isSpeechStarted = true
+            }
+        }
+    }
+
+    val amplitudeListener = remember {
+        object : ISpeechManager.SpeechAmplitudeListener {
+            override fun onAmplitude(value: Float?) {
+                if (!isSpeechStarted) {
+                    return
+                }
+                if (value != null) {
+                    val amplitudeHold = amplitude
+                    amplitude =
+                        (previousAmplitude * STRETCH_SMOOTHING) + (value * (1 - STRETCH_SMOOTHING))
+                    previousAmplitude = amplitudeHold
+                }
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        speechManager.addStartedListener(speechStartedListener)
+        speechManager.addAmplitudeListener(amplitudeListener)
+
+        onDispose {
+            speechManager.removeStartedListener(speechStartedListener)
+            speechManager.removeAmplitudeListener(amplitudeListener)
+        }
+    }
+
+    val transition = rememberInfiniteTransition()
+
+    val animY by transition.animateFloat(
+        initialValue = wobbleDistance,
+        targetValue = -wobbleDistance,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMs, 0, EaseInOutSine),
+            repeatMode = RepeatMode.Reverse,
+            initialStartOffset = StartOffset(delayMs, StartOffsetType.Delay)
+        )
+    )
+
+    yOffset = if (isSpeechStarted) yOffset * 0.9f else animY.dp
+
+    Box(
+        modifier = Modifier
+            .width(CIRCLE_LENGTH)
+            .height(CIRCLE_LENGTH * stretch)
+            .offset(0.dp, yOffset)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(COLOR, CircleShape)
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xF00, device = Devices.NEXUS_5)
+@Composable
+fun SpeechInputDotPreview() {
+    val context = LocalContext.current
+    startKoin {
+        androidContext(context)
+        modules(mainTestModule)
+    }
+    AppTheme(darkTheme = true) {
+        SpeechInputIndicatorDot(1000, 2f, 0, 1f, 1.5f)
+    }
+}
