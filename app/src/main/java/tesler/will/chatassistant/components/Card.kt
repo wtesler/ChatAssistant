@@ -13,17 +13,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
+import tesler.will.chatassistant.speech.SpeechManager
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
 fun Card() {
+    val speechManager = koinInject<SpeechManager>()
+
     var state by remember { mutableStateOf(State.RECEIVING_INPUT) }
-    var text by remember { mutableStateOf("") }
 
     val shape = RoundedCornerShape(MaterialTheme.spacing.large)
 
-    fun onText(s: String) {
-        text = s
+    fun onSpeechFinished() {
+        state = State.SENDING_INPUT
+    }
+
+    DisposableEffect(Unit) {
+        speechManager.addFinishedListener(::onSpeechFinished)
+        onDispose {
+            speechManager.removeFinishedListener(::onSpeechFinished)
+        }
     }
 
     Surface(
@@ -36,8 +46,8 @@ fun Card() {
         color = MaterialTheme.colors.surface
     ) {
         when (state) {
-            State.RECEIVING_INPUT -> ReceivingInput({ state = State.SENDING_INPUT }, ::onText)
-            State.SENDING_INPUT -> SendingInput(text, { state = State.PLAYING_RESPONSE }, ::onText)
+            State.RECEIVING_INPUT -> ReceivingInput()
+            State.SENDING_INPUT -> SendingInput()
             State.PLAYING_RESPONSE -> PlayingResponse { state = State.RECEIVING_INPUT }
         }
     }

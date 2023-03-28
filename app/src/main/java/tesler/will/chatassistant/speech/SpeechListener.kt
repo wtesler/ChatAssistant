@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer.RESULTS_RECOGNITION
 
-public class Listener(
-    val onWords: (String) -> Unit,
+public class SpeechListener(
+    val onText: (String) -> Unit,
     val onFinished: () -> Unit,
-    val onText: (String) -> Unit
+    val onSpeechError: (Int) -> Unit
 ) : RecognitionListener {
 
     override fun onReadyForSpeech(params: Bundle?) {
@@ -27,19 +27,21 @@ public class Listener(
         println("END OF SPEECH")
     }
 
-    override fun onError(error: Int) {
-        println("Error code: $error")
+    override fun onError(errorCode: Int) {
+        println("Error code: $errorCode")
+        onSpeechError(errorCode)
     }
 
     override fun onResults(results: Bundle?) {
+        println("ON RESULTS")
         if (results == null) {
+            onFinished()
             return
         }
-        val stringList = results.getStringArrayList(RESULTS_RECOGNITION) ?: return;
+        val stringList = results.getStringArrayList(RESULTS_RECOGNITION) ?: ArrayList<String>();
         val words = if (stringList.size > 0) stringList[0] else ""
         onText(words)
         onFinished()
-        println("ON RESULTS")
     }
 
     override fun onPartialResults(partialResults: Bundle?) {
@@ -48,7 +50,7 @@ public class Listener(
         }
         val stringList = partialResults.getStringArrayList(RESULTS_RECOGNITION) ?: return;
         val words = if (stringList.size > 0) stringList[0] else ""
-        onWords(words)
+        onText(words)
     }
 
     override fun onEvent(eventType: Int, params: Bundle?) {

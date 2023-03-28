@@ -1,4 +1,4 @@
-package tesler.will.chatassistant
+package tesler.will.chatassistant.activities.main
 
 import android.Manifest.permission.RECORD_AUDIO
 import android.os.Bundle
@@ -19,16 +19,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
+import tesler.will.chatassistant.BuildConfig
+import tesler.will.chatassistant.R
 import tesler.will.chatassistant.components.Card
 import tesler.will.chatassistant.ui.theme.ChatAssistantTheme
 
-
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(BuildConfig.DEBUG)
-            StrictMode.enableDefaults();
+        if (BuildConfig.DEBUG) {
+            StrictMode.enableDefaults()
+        }
+
+        loadKoinModules(mainModule)
 
         setContent {
             PermissionWrapper()
@@ -37,6 +44,11 @@ class MainActivity : ComponentActivity() {
         setTheme(R.style.Theme_ChatAssistant)
 
         window.setLayout(MATCH_PARENT, MATCH_PARENT)
+    }
+
+    override fun onDestroy() {
+        unloadKoinModules(mainModule)
+        super.onDestroy()
     }
 }
 
