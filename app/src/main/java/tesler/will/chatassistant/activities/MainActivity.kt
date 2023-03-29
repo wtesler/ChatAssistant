@@ -26,8 +26,10 @@ import org.koin.core.context.unloadKoinModules
 import tesler.will.chatassistant.BuildConfig
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant.components.Card
+import tesler.will.chatassistant.components.speechinput.SpeechInputSection
 import tesler.will.chatassistant.di.main.mainModule
 import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -107,12 +109,7 @@ fun MainThemed() {
 @Preview(showBackground = true, backgroundColor = 0xF00, device = Devices.NEXUS_5)
 @Composable
 fun DefaultPreview() {
-    val context = LocalContext.current
-    startKoin {
-        androidContext(context)
-        modules(mainTestModule)
-    }
-    AppTheme(darkTheme = true) {
+    Previews.Wrap(mainTestModule, true) {
         Main()
     }
 }

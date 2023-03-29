@@ -6,17 +6,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.koin.android.ext.koin.androidContext
 import org.koin.compose.koinInject
-import org.koin.core.context.startKoin
-import tesler.will.chatassistant.di.main.mainTestModule
 import tesler.will.chatassistant.components.speechinput.indicator.SpeechInputIndicator
+import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.speech.ISpeechManager
-import tesler.will.chatassistant.ui.theme.AppTheme
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
@@ -92,12 +89,7 @@ fun SpeechInputSection() {
 @Preview(showBackground = true, backgroundColor = 0x00F, device = Devices.NEXUS_5)
 @Composable
 fun SpeechInputSectionPreview() {
-    val context = LocalContext.current
-    startKoin {
-        androidContext(context)
-        modules(mainTestModule)
-    }
-    AppTheme(darkTheme = true) {
+    Previews.Wrap(mainTestModule, true) {
         SpeechInputSection()
     }
 }

@@ -10,17 +10,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.koin.android.ext.koin.androidContext
 import org.koin.compose.koinInject
-import org.koin.core.context.startKoin
 import tesler.will.chatassistant.components.speechinput.SpeechInputSection
 import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.speech.ISpeechManager
-import tesler.will.chatassistant.ui.theme.AppTheme
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
@@ -89,12 +86,7 @@ enum class State {
 )
 @Composable
 fun CardPreview() {
-    val context = LocalContext.current
-    startKoin {
-        androidContext(context)
-        modules(mainTestModule)
-    }
-    AppTheme(darkTheme = true) {
+    Previews.Wrap(mainTestModule, true) {
         Card()
     }
 }
