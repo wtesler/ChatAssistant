@@ -27,6 +27,7 @@ import tesler.will.chatassistant.components.Card
 import tesler.will.chatassistant.di.chat.chatModule
 import tesler.will.chatassistant.di.chat.chatTestModule
 import tesler.will.chatassistant.di.main.mainModule
+import tesler.will.chatassistant.di.main.mainTestModule
 import tesler.will.chatassistant.di.speech.speechModule
 import tesler.will.chatassistant.di.speech.speechTestModule
 import tesler.will.chatassistant.modifiers.noRippleClickable
@@ -114,7 +115,7 @@ fun MainThemed() {
 @Preview
 @Composable
 fun DefaultPreview() {
-    Previews.Wrap(listOf(speechTestModule, chatTestModule), true) {
+    Previews.Wrap(mainTestModule, true) {
         Main(null)
     }
 }

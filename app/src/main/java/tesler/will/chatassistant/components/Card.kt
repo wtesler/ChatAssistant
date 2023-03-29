@@ -82,7 +82,7 @@ enum class State {
 @Preview
 @Composable
 fun CardPreview() {
-    Previews.Wrap(listOf(speechTestModule, chatTestModule), true) {
+    Previews.Wrap(mainTestModule, true) {
         Card()
     }
 }

@@ -102,7 +102,7 @@ enum class State {
 @Preview
 @Composable
 fun SpeechInputSectionPreview() {
-    Previews.Wrap(listOf(speechTestModule, chatTestModule), true) {
+    Previews.Wrap(mainTestModule, true) {
         SpeechInputSection()
     }
 }
