@@ -1,6 +1,6 @@
 package tesler.will.chatassistant.chat
 
-class TestChatManager : IChatManager {
+class EmptyChatManager : IChatManager {
     override fun getChats(): ArrayList<ChatModel> {
         return ArrayList()
     }

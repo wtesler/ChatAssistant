@@ -2,7 +2,7 @@ package tesler.will.chatassistant.speech
 
 import tesler.will.chatassistant.speech.ISpeechManager.*
 
-class TestSpeechManager : ISpeechManager {
+class EmptySpeechManager : ISpeechManager {
     override fun start() {
     }
 

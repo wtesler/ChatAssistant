@@ -25,11 +25,9 @@ import tesler.will.chatassistant.BuildConfig
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant.components.Card
 import tesler.will.chatassistant.di.chat.chatModule
-import tesler.will.chatassistant.di.chat.chatTestModule
 import tesler.will.chatassistant.di.main.mainModule
 import tesler.will.chatassistant.di.main.mainTestModule
 import tesler.will.chatassistant.di.speech.speechModule
-import tesler.will.chatassistant.di.speech.speechTestModule
 import tesler.will.chatassistant.modifiers.noRippleClickable
 import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.ui.theme.AppTheme
@@ -57,6 +55,12 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         unloadKoinModules(mainModule)
         super.onDestroy()
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishAndRemoveTask()
     }
 }
 
@@ -96,7 +100,7 @@ fun Main(activity: Activity?) {
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
             .noRippleClickable {
-                activity?.finish()
+                activity?.finishAndRemoveTask()
             },
         contentAlignment = Alignment.BottomCenter,
     ) {
