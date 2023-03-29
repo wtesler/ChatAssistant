@@ -7,12 +7,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.math.MathUtils
 import org.koin.compose.koinInject
 import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.di.speech.speechTestModule
 import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.speech.ISpeechManager
 import kotlin.math.pow
@@ -25,9 +25,9 @@ fun SpeechInputIndicatorDot(
     amplitudeMultiplier: Float,
     amplitudePow: Float
 ) {
-    val CIRCLE_LENGTH = 10.dp
+    val CIRCLE_LENGTH = 9.dp
     val COLOR = MaterialTheme.colors.onSurface
-    val MAX_STRETCH = 2.8f
+    val MAX_STRETCH = 2.5f
     val STRETCH_SMOOTHING = .6f
 
     val speechManager = koinInject<ISpeechManager>()
@@ -50,16 +50,12 @@ fun SpeechInputIndicatorDot(
         }
     }
 
-    val speechStartedListener = remember {
-        object : ISpeechManager.SpeechStartedListener {
+    val speechListener = remember {
+        object : ISpeechManager.Listener {
             override fun onSpeechStarted() {
                 isSpeechStarted = true
             }
-        }
-    }
 
-    val amplitudeListener = remember {
-        object : ISpeechManager.SpeechAmplitudeListener {
             override fun onAmplitude(value: Float?) {
                 if (!isSpeechStarted) {
                     return
@@ -75,12 +71,10 @@ fun SpeechInputIndicatorDot(
     }
 
     DisposableEffect(Unit) {
-        speechManager.addStartedListener(speechStartedListener)
-        speechManager.addAmplitudeListener(amplitudeListener)
+        speechManager.addListener(speechListener)
 
         onDispose {
-            speechManager.removeStartedListener(speechStartedListener)
-            speechManager.removeAmplitudeListener(amplitudeListener)
+            speechManager.removeListener(speechListener)
         }
     }
 
@@ -112,10 +106,10 @@ fun SpeechInputIndicatorDot(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xF00, device = Devices.NEXUS_5)
+@Preview
 @Composable
 fun SpeechInputDotPreview() {
-    Previews.Wrap(mainTestModule, true) {
+    Previews.Wrap(speechTestModule, true) {
         SpeechInputIndicatorDot(1000, 2f, 0, 1f, 1.5f)
     }
 }

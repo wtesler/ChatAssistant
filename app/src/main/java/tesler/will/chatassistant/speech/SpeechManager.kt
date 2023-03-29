@@ -2,7 +2,9 @@ package tesler.will.chatassistant.speech
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.speech.RecognizerIntent
+import android.speech.RecognizerIntent.FORMATTING_OPTIMIZE_QUALITY
 import android.speech.SpeechRecognizer
 import android.widget.Toast
 import tesler.will.chatassistant.speech.ISpeechManager.*
@@ -17,11 +19,7 @@ class SpeechManager(private val context: Context) : ISpeechManager {
     private var amplitude: Float? = null
     private var errorCode: Int? = null
 
-    private val startedListeners = mutableListOf<SpeechStartedListener>()
-    private val finishedListeners = mutableListOf<SpeechFinishedListener>()
-    private val textListeners = mutableListOf<SpeechTextListener>()
-    private val amplitudeListeners = mutableListOf<SpeechAmplitudeListener>()
-    private val errorListeners = mutableListOf<SpeechErrorListener>()
+    private val listeners = mutableListOf<Listener>()
 
     override fun start() {
         if (speechRecognizer != null) {
@@ -55,6 +53,11 @@ class SpeechManager(private val context: Context) : ISpeechManager {
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.packageName)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, FORMATTING_OPTIMIZE_QUALITY)
+                putExtra(RecognizerIntent.EXTRA_HIDE_PARTIAL_TRAILING_PUNCTUATION, true)
+            }
         }
 
         speechRecognizer?.startListening(recognizerIntent)
@@ -65,10 +68,7 @@ class SpeechManager(private val context: Context) : ISpeechManager {
             speechRecognizer?.destroy()
             speechRecognizer = null
         }
-    }
 
-    override fun clear() {
-        stop()
         isStarted = null
         isFinished = null
         text = null
@@ -76,59 +76,27 @@ class SpeechManager(private val context: Context) : ISpeechManager {
         errorCode = null
     }
 
-    override fun addStartedListener(listener: SpeechStartedListener) {
-        startedListeners.add(listener)
+    override fun addListener(listener: Listener) {
+        listeners.add(listener)
         if (isStarted != null) {
             listener.onSpeechStarted()
         }
-    }
-
-    override fun addFinishedListener(listener: SpeechFinishedListener) {
-        finishedListeners.add(listener)
-        if (isFinished != null) {
-            listener.onSpeechFinished()
-        }
-    }
-
-    override fun addTextListener(listener: SpeechTextListener) {
-        textListeners.add(listener)
         if (text != null) {
             listener.onText(text)
         }
-    }
-
-    override fun addAmplitudeListener(listener: SpeechAmplitudeListener) {
-        amplitudeListeners.add(listener)
         if (amplitude != null) {
             listener.onAmplitude(amplitude)
         }
-    }
-
-    override fun addErrorListener(listener: SpeechErrorListener) {
-        errorListeners.add(listener)
+        if (isFinished != null) {
+            listener.onSpeechFinished()
+        }
         if (errorCode != null) {
             listener.onError(errorCode)
         }
     }
 
-    override fun removeStartedListener(listener: SpeechStartedListener) {
-        startedListeners.remove(listener)
-    }
-
-    override fun removeFinishedListener(listener: SpeechFinishedListener) {
-        finishedListeners.remove(listener)
-    }
-
-    override fun removeTextListener(listener: SpeechTextListener) {
-        textListeners.remove(listener)
-    }
-
-    override fun removeAmplitudeListener(listener: SpeechAmplitudeListener) {
-        amplitudeListeners.remove(listener)
-    }
-
-    override fun removeErrorListener(listener: SpeechErrorListener) {
-        errorListeners.remove(listener)
+    override fun removeListener(listener: Listener) {
+        listeners.remove(listener)
     }
 
     private fun onReady() {
@@ -137,35 +105,35 @@ class SpeechManager(private val context: Context) : ISpeechManager {
 
     private fun onStarted() {
         isStarted = true
-        for (listener in startedListeners) {
+        for (listener in listeners) {
             listener.onSpeechStarted()
         }
     }
 
     private fun onFinished() {
         isFinished = true
-        for (listener in finishedListeners) {
+        for (listener in listeners) {
             listener.onSpeechFinished()
         }
     }
 
     private fun onText(t: String) {
         text = t
-        for (listener in textListeners) {
+        for (listener in listeners) {
             listener.onText(t)
         }
     }
 
     private fun onAmplitude(f: Float) {
         amplitude = f
-        for (listener in amplitudeListeners) {
+        for (listener in listeners) {
             listener.onAmplitude(f)
         }
     }
 
     private fun onError(code: Int) {
         errorCode = code
-        for (listener in errorListeners) {
+        for (listener in listeners) {
             listener.onError(code)
         }
     }

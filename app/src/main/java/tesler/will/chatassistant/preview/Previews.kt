@@ -14,7 +14,7 @@ class Previews {
     companion object {
         @Composable
         fun Wrap(
-            modules: List<Module> = arrayListOf(),
+            modules: List<Module> = listOf(),
             isLightTheme: Boolean = true,
             content: @Composable () -> Unit
         ) {
@@ -35,6 +35,16 @@ class Previews {
             content: @Composable () -> Unit
         ) {
             Wrap(listOf(module), isLightTheme) {
+                content()
+            }
+        }
+
+        @Composable
+        fun Wrap(
+            isLightTheme: Boolean = true,
+            content: @Composable () -> Unit
+        ) {
+            Wrap(listOf(), isLightTheme) {
                 content()
             }
         }

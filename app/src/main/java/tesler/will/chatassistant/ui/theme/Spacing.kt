@@ -13,7 +13,8 @@ data class Spacing(
     val small: Dp = 5.dp,
     val medium: Dp = 10.dp,
     val large: Dp = 15.dp,
-    val extraLarge: Dp = 20.dp,
+    val xlarge: Dp = 25.dp,
+    val xxlarge: Dp = 35.dp,
 )
 
 val LocalSpacing = compositionLocalOf { Spacing() }

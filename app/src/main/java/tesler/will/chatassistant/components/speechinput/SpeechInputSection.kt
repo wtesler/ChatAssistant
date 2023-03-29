@@ -1,95 +1,108 @@
 package tesler.will.chatassistant.components.speechinput
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+import tesler.will.chatassistant.chat.ChatModel
+import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.components.speechinput.indicator.SpeechInputIndicator
+import tesler.will.chatassistant.di.chat.chatTestModule
 import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.di.speech.speechTestModule
 import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.speech.ISpeechManager
-import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
 fun SpeechInputSection() {
     val speechManager = koinInject<ISpeechManager>()
+    val chatManager = koinInject<IChatManager>()
 
-    var text by remember { mutableStateOf("Hi, how can I help?") }
+    var state by remember { mutableStateOf(State.ACTIVE) }
+    var chat by remember { mutableStateOf(ChatModel()) }
 
-    val speechTextListener = remember {
-        object: ISpeechManager.SpeechTextListener {
+    val speechListener = remember {
+        object : ISpeechManager.Listener {
             override fun onText(value: String?) {
                 if (value != null) {
-                    text = value
+                    chat.text = value
+                    chatManager.updateChat(chat)
                 }
             }
-        }
-    }
 
-    val speechErrorListener = remember {
-        object: ISpeechManager.SpeechErrorListener {
             override fun onError(statusCode: Int?) {
                 if (statusCode != null) {
-                    text = if (statusCode == 7) {
-                        "Did not receive any speech."
+                    if (statusCode == 7) {
+                        chat.text = "Did not receive any speech."
+                        speechManager.stop()
+                        state = State.READY
                     } else {
-                        "Error. Status code $statusCode."
+                        chat.text = "Error. Status code $statusCode."
                     }
+                    chatManager.updateChat(chat)
                 }
+            }
+
+            override fun onSpeechFinished() {
+                speechManager.stop()
+                state = State.WAITING
             }
         }
     }
 
-    DisposableEffect(Unit) {
-        speechManager.addTextListener(speechTextListener)
-        speechManager.addErrorListener(speechErrorListener)
+    val start = remember {{
+        chat = ChatModel("Hi, how can I help?")
+        chatManager.addChat(chat)
         speechManager.start()
+    }}
+
+    DisposableEffect(Unit) {
+        speechManager.addListener(speechListener)
+        start()
 
         onDispose {
             speechManager.stop()
-            speechManager.removeTextListener(speechTextListener)
-            speechManager.removeErrorListener(speechErrorListener)
+            speechManager.removeListener(speechListener)
         }
     }
-
-    val TOP_PADDING = MaterialTheme.spacing.large
-    val BOTTOM_PADDING = MaterialTheme.spacing.medium
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentWidth()
-            .wrapContentHeight()
-            .padding(0.dp, TOP_PADDING, 0.dp, BOTTOM_PADDING),
+            .wrapContentWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            modifier = Modifier.wrapContentWidth(),
-            text = text,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.onSurface
-        )
-        Spacer(modifier = Modifier.height(20.dp))
         Box(
-            modifier = Modifier
-                .height(40.dp),
+            modifier = Modifier.height(40.dp),
             contentAlignment = Alignment.Center
         ) {
-            SpeechInputIndicator()
+            when (state) {
+                State.ACTIVE -> SpeechInputIndicator()
+                State.WAITING -> CircularProgressIndicator(
+                    color = MaterialTheme.colors.onSurface,
+                    strokeWidth = 5.dp
+                )
+                else -> {}
+            }
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0x00F, device = Devices.NEXUS_5)
+enum class State {
+    ACTIVE,
+    WAITING,
+    READY
+}
+
+@Preview
 @Composable
 fun SpeechInputSectionPreview() {
-    Previews.Wrap(mainTestModule, true) {
+    Previews.Wrap(listOf(speechTestModule, chatTestModule), true) {
         SpeechInputSection()
     }
 }

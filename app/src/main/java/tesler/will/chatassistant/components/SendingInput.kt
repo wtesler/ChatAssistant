@@ -16,8 +16,8 @@ fun SendingInput() {
 
     var text by remember { mutableStateOf("") }
 
-    val speechTextListener = remember {
-        object: ISpeechManager.SpeechTextListener {
+    val speechListener = remember {
+        object: ISpeechManager.Listener {
             override fun onText(value: String?) {
                 if (value != null) {
                     text = value
@@ -27,9 +27,9 @@ fun SendingInput() {
     }
 
     DisposableEffect(Unit) {
-        speechManager.addTextListener(speechTextListener)
+        speechManager.addListener(speechListener)
         onDispose {
-            speechManager.removeTextListener(speechTextListener)
+            speechManager.removeListener(speechListener)
         }
     }
 

@@ -1,6 +1,7 @@
 package tesler.will.chatassistant.activities
 
 import android.Manifest.permission.RECORD_AUDIO
+import android.app.Activity
 import android.os.Bundle
 import android.os.StrictMode
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -17,18 +18,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.loadKoinModules
-import org.koin.core.context.startKoin
 import org.koin.core.context.unloadKoinModules
 import tesler.will.chatassistant.BuildConfig
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant.components.Card
-import tesler.will.chatassistant.components.speechinput.SpeechInputSection
+import tesler.will.chatassistant.di.chat.chatModule
+import tesler.will.chatassistant.di.chat.chatTestModule
 import tesler.will.chatassistant.di.main.mainModule
-import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.di.speech.speechModule
+import tesler.will.chatassistant.di.speech.speechTestModule
+import tesler.will.chatassistant.modifiers.noRippleClickable
 import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.ui.theme.AppTheme
 
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
             StrictMode.enableDefaults()
         }
 
-        loadKoinModules(mainModule)
+        loadKoinModules(listOf(speechModule, chatModule))
 
         setContent {
             PermissionWrapper()
@@ -88,11 +89,14 @@ fun PermissionWrapper() {
 }
 
 @Composable
-fun Main() {
+fun Main(activity: Activity?) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background),
+            .background(MaterialTheme.colors.background)
+            .noRippleClickable {
+                activity?.finish()
+            },
         contentAlignment = Alignment.BottomCenter,
     ) {
         Card()
@@ -101,15 +105,16 @@ fun Main() {
 
 @Composable
 fun MainThemed() {
+    val activity = LocalContext.current as ComponentActivity
     AppTheme {
-        Main()
+        Main(activity)
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xF00, device = Devices.NEXUS_5)
+@Preview
 @Composable
 fun DefaultPreview() {
-    Previews.Wrap(mainTestModule, true) {
-        Main()
+    Previews.Wrap(listOf(speechTestModule, chatTestModule), true) {
+        Main(null)
     }
 }

@@ -51,6 +51,7 @@ public class SpeechListener(
     }
 
     override fun onPartialResults(partialResults: Bundle?) {
+        println("ON PARTIAL RESULTS")
         if (partialResults == null) {
             return
         }
