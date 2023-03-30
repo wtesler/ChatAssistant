@@ -3,6 +3,7 @@ package tesler.will.chatassistant.speechinput.listener
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer.RESULTS_RECOGNITION
+import android.util.Log
 
 class SpeechListener(
     val onReady: () -> Unit,
@@ -14,11 +15,10 @@ class SpeechListener(
 ) : RecognitionListener {
 
     override fun onReadyForSpeech(params: Bundle?) {
-        println("SPEECH READY")
+        onReady()
     }
 
     override fun onBeginningOfSpeech() {
-        println("BEGINNING OF SPEECH")
         onStarted()
     }
 
@@ -30,16 +30,14 @@ class SpeechListener(
     }
 
     override fun onEndOfSpeech() {
-        println("END OF SPEECH")
     }
 
     override fun onError(errorCode: Int) {
-        println("Error code: $errorCode")
+        Log.e("Speech Listener", "Error code: $errorCode")
         onSpeechError(errorCode)
     }
 
     override fun onResults(results: Bundle?) {
-        println("ON RESULTS")
         if (results == null) {
             onFinished()
             return
@@ -51,7 +49,6 @@ class SpeechListener(
     }
 
     override fun onPartialResults(partialResults: Bundle?) {
-        println("ON PARTIAL RESULTS")
         if (partialResults == null) {
             return
         }

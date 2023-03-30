@@ -67,7 +67,7 @@ fun ChatSection() {
 
     val speechInputListener = remember {
         object : ISpeechInputManager.Listener {
-            override fun onListeningStarted() {
+            override fun onSpeechStarted() {
                 scrollToLastItem()
             }
         }

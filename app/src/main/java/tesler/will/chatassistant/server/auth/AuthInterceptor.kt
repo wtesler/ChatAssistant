@@ -7,7 +7,7 @@ import okhttp3.Response
 
 class AuthInterceptor() : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        TrafficStats.setThreadStatsTag(1) // Thread.currentThread().id.toInt())
+        TrafficStats.setThreadStatsTag(Thread.currentThread().id.toInt())
 
         var req = chain.request()
         // val url = req.url().newBuilder().addQueryParameter("APPID", "your_key_here").build()
