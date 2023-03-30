@@ -1,16 +1,19 @@
 package tesler.will.chatassistant._components.speechinput
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.IChatManager
@@ -22,13 +25,13 @@ import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 
 @Composable
-fun SpeechInputSection() {
+fun SpeechInputSection(initialState: State = State.ACTIVE) {
     val speechInputManager = koinInject<ISpeechInputManager>()
     val speechOutputManager = koinInject<ISpeechOutputManager>()
     val chatManager = koinInject<IChatManager>()
     val apiService = koinInject<ApiService>()
 
-    var state by remember { mutableStateOf(State.ACTIVE) }
+    var state by remember { mutableStateOf(initialState) }
     var chat by remember { mutableStateOf(ChatModel()) }
     val composableScope = rememberCoroutineScope()
 
@@ -123,9 +126,10 @@ fun SpeechInputSection() {
                     color = MaterialTheme.colors.onSurface,
                     strokeWidth = 5.dp
                 )
-                State.READY -> Text(
-                    text = "Show Microphone",
-                    color = MaterialTheme.colors.onSurface
+                State.READY -> Image(
+                    painter = painterResource(id = R.drawable.microphone),
+                    contentDescription = "Default Image Icon",
+                    colorFilter = tint(MaterialTheme.colors.onSurface)
                 )
             }
         }
@@ -142,6 +146,6 @@ enum class State {
 @Composable
 fun SpeechInputSectionPreview() {
     Previews.Wrap(mainTestModule, true) {
-        SpeechInputSection()
+        SpeechInputSection(State.READY)
     }
 }
