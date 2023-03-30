@@ -1,10 +1,10 @@
-package tesler.will.chatassistant.speech.listener
+package tesler.will.chatassistant.speechinput.listener
 
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.SpeechRecognizer.RESULTS_RECOGNITION
 
-public class SpeechListener(
+class SpeechListener(
     val onReady: () -> Unit,
     val onStarted: () -> Unit,
     val onFinished: () -> Unit,

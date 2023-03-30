@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.speech
+package tesler.will.chatassistant.speechinput
 
 import android.content.Context
 import android.content.Intent
@@ -7,10 +7,10 @@ import android.speech.RecognizerIntent
 import android.speech.RecognizerIntent.FORMATTING_OPTIMIZE_QUALITY
 import android.speech.SpeechRecognizer
 import android.widget.Toast
-import tesler.will.chatassistant.speech.ISpeechManager.*
-import tesler.will.chatassistant.speech.listener.SpeechListener
+import tesler.will.chatassistant.speechinput.ISpeechInputManager.*
+import tesler.will.chatassistant.speechinput.listener.SpeechListener
 
-class SpeechManager(private val context: Context) : ISpeechManager {
+class SpeechInputManager(private val context: Context) : ISpeechInputManager {
 
     private var speechRecognizer: SpeechRecognizer? = null
 
@@ -88,8 +88,8 @@ class SpeechManager(private val context: Context) : ISpeechManager {
         if (amplitude != null) {
             listener.onAmplitude(amplitude)
         }
-        if (isFinished != null) {
-            listener.onSpeechFinished()
+        if (isFinished != null && text != null) {
+            listener.onSpeechFinished(text)
         }
         if (errorCode != null) {
             listener.onError(errorCode)
@@ -114,7 +114,7 @@ class SpeechManager(private val context: Context) : ISpeechManager {
     private fun onFinished() {
         isFinished = true
         for (listener in listeners) {
-            listener.onSpeechFinished()
+            listener.onSpeechFinished(text)
         }
     }
 

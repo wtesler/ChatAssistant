@@ -10,9 +10,7 @@ import org.koin.core.context.unloadKoinModules
 import tesler.will.chatassistant.BuildConfig
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.Main
-import tesler.will.chatassistant.modules.chat.chatModule
 import tesler.will.chatassistant.modules.main.mainModule
-import tesler.will.chatassistant.modules.speech.speechModule
 
 class MainActivity : ComponentActivity() {
 
@@ -23,7 +21,7 @@ class MainActivity : ComponentActivity() {
             StrictMode.enableDefaults()
         }
 
-        loadKoinModules(listOf(speechModule, chatModule))
+        loadKoinModules(mainModule)
 
         setContent {
             Main(this)

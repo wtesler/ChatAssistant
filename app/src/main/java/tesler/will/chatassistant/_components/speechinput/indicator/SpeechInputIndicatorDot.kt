@@ -13,7 +13,7 @@ import androidx.core.math.MathUtils
 import org.koin.compose.koinInject
 import tesler.will.chatassistant.modules.speech.speechTestModule
 import tesler.will.chatassistant.preview.Previews
-import tesler.will.chatassistant.speech.ISpeechManager
+import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import kotlin.math.pow
 
 @Composable
@@ -29,7 +29,7 @@ fun SpeechInputIndicatorDot(
     val MAX_STRETCH = 2.5f
     val STRETCH_SMOOTHING = .6f
 
-    val speechManager = koinInject<ISpeechManager>()
+    val speechManager = koinInject<ISpeechInputManager>()
 
     var yOffset by remember { mutableStateOf(0.dp) }
     var isSpeechStarted by remember { mutableStateOf(false) }
@@ -50,7 +50,7 @@ fun SpeechInputIndicatorDot(
     }
 
     val speechListener = remember {
-        object : ISpeechManager.Listener {
+        object : ISpeechInputManager.Listener {
             override fun onSpeechStarted() {
                 isSpeechStarted = true
             }

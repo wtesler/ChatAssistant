@@ -1,6 +1,6 @@
-package tesler.will.chatassistant.speech
+package tesler.will.chatassistant.speechinput
 
-interface ISpeechManager {
+interface ISpeechInputManager {
 
     fun start()
     fun stop()
@@ -9,7 +9,7 @@ interface ISpeechManager {
 
     interface Listener {
         fun onSpeechStarted() = run { }
-        fun onSpeechFinished() = run { }
+        fun onSpeechFinished(value: String?) = run { }
         fun onText(value: String?) = run { }
         fun onAmplitude(value: Float?) = run { }
         fun onError(statusCode: Int?) = run { }

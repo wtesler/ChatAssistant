@@ -18,20 +18,20 @@ import tesler.will.chatassistant._components.speechinput.SpeechInputSection
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.modifiers.noRippleClickable
 import tesler.will.chatassistant.preview.Previews
-import tesler.will.chatassistant.speech.ISpeechManager
+import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
 fun Card() {
-    val speechManager = koinInject<ISpeechManager>()
+    val speechManager = koinInject<ISpeechInputManager>()
 
     var state by remember { mutableStateOf(State.RECEIVING_INPUT) }
 
     val shape = RoundedCornerShape(MaterialTheme.spacing.large)
 
     val speechListener = remember {
-        object : ISpeechManager.Listener {
-            override fun onSpeechFinished() {
+        object : ISpeechInputManager.Listener {
+            override fun onSpeechFinished(value: String?) {
                 state = State.SENDING_INPUT
             }
         }

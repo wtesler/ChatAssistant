@@ -2,9 +2,13 @@ package tesler.will.chatassistant.modules.speech
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-import tesler.will.chatassistant.speech.ISpeechManager
-import tesler.will.chatassistant.speech.SpeechManager
+import tesler.will.chatassistant.speechinput.ISpeechInputManager
+import tesler.will.chatassistant.speechinput.SpeechInputManager
+import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
+import tesler.will.chatassistant.speechoutput.SpeechOutputManager
 
 val speechModule = module {
-    single<ISpeechManager> { SpeechManager(androidContext()) }
+    single<ISpeechInputManager> { SpeechInputManager(androidContext()) }
+    single<ISpeechOutputManager> { SpeechOutputManager(androidContext()) }
+
 }

@@ -1,8 +1,8 @@
-package tesler.will.chatassistant.speech
+package tesler.will.chatassistant.speechinput
 
-import tesler.will.chatassistant.speech.ISpeechManager.*
+import tesler.will.chatassistant.speechinput.ISpeechInputManager.*
 
-class EmptySpeechManager : ISpeechManager {
+class EmptySpeechInputManager : ISpeechInputManager {
     override fun start() {
     }
 
