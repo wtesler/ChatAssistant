@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.components.speechinput.indicator
+package tesler.will.chatassistant._components.speechinput.indicator
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -11,8 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.math.MathUtils
 import org.koin.compose.koinInject
-import tesler.will.chatassistant.di.main.mainTestModule
-import tesler.will.chatassistant.di.speech.speechTestModule
+import tesler.will.chatassistant.modules.speech.speechTestModule
 import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.speech.ISpeechManager
 import kotlin.math.pow

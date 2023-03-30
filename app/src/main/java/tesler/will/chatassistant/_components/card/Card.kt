@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.components
+package tesler.will.chatassistant._components.card
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -13,11 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
-import tesler.will.chatassistant.components.chat.ChatSection
-import tesler.will.chatassistant.components.speechinput.SpeechInputSection
-import tesler.will.chatassistant.di.chat.chatTestModule
-import tesler.will.chatassistant.di.main.mainTestModule
-import tesler.will.chatassistant.di.speech.speechTestModule
+import tesler.will.chatassistant._components.chat.ChatSection
+import tesler.will.chatassistant._components.speechinput.SpeechInputSection
+import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.modifiers.noRippleClickable
 import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.speech.ISpeechManager

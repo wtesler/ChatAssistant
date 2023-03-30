@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.di.speech
+package tesler.will.chatassistant.modules.speech
 
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module

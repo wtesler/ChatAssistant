@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.components.chat
+package tesler.will.chatassistant._components.chat
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -13,9 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.IChatManager
-import tesler.will.chatassistant.di.chat.chatModule
-import tesler.will.chatassistant.di.main.mainModule
-import tesler.will.chatassistant.di.main.mainTestModule
+import tesler.will.chatassistant.modules.chat.chatModule
 import tesler.will.chatassistant.preview.Previews
 
 @Composable

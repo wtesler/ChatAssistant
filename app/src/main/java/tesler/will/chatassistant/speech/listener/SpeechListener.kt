@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.speech
+package tesler.will.chatassistant.speech.listener
 
 import android.os.Bundle
 import android.speech.RecognitionListener

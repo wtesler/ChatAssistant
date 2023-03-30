@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.components.speechinput
+package tesler.will.chatassistant._components.speechinput
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
@@ -11,10 +11,8 @@ import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.IChatManager
-import tesler.will.chatassistant.components.speechinput.indicator.SpeechInputIndicator
-import tesler.will.chatassistant.di.chat.chatTestModule
-import tesler.will.chatassistant.di.main.mainTestModule
-import tesler.will.chatassistant.di.speech.speechTestModule
+import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
+import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.preview.Previews
 import tesler.will.chatassistant.speech.ISpeechManager
 
@@ -55,11 +53,16 @@ fun SpeechInputSection() {
         }
     }
 
-    val start = remember {{
-        chat = ChatModel("Hi, how can I help?")
-        chatManager.addChat(chat)
-        speechManager.start()
-    }}
+    val start = remember {
+        {
+            val numChats = chatManager.getChats().size
+            val defaultMessage = if (numChats == 0) "Hi, how can I help?" else ""
+
+            chat = ChatModel(defaultMessage)
+            chatManager.addChat(chat)
+            speechManager.start()
+        }
+    }
 
     DisposableEffect(Unit) {
         speechManager.addListener(speechListener)

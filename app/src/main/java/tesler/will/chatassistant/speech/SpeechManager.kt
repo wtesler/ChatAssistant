@@ -8,6 +8,7 @@ import android.speech.RecognizerIntent.FORMATTING_OPTIMIZE_QUALITY
 import android.speech.SpeechRecognizer
 import android.widget.Toast
 import tesler.will.chatassistant.speech.ISpeechManager.*
+import tesler.will.chatassistant.speech.listener.SpeechListener
 
 class SpeechManager(private val context: Context) : ISpeechManager {
 

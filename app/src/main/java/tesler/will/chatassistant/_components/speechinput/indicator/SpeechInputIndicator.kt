@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.components.speechinput.indicator
+package tesler.will.chatassistant._components.speechinput.indicator
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
@@ -6,8 +6,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import tesler.will.chatassistant.di.main.mainTestModule
-import tesler.will.chatassistant.di.speech.speechTestModule
+import tesler.will.chatassistant.modules.speech.speechTestModule
 import tesler.will.chatassistant.preview.Previews
 import kotlin.math.roundToInt
 
