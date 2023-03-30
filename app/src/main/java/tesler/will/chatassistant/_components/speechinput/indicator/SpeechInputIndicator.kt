@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant.modules.speech.speechTestModule
-import tesler.will.chatassistant.preview.Previews
+import tesler.will.chatassistant._components.preview.Previews
 import kotlin.math.roundToInt
 
 @Composable

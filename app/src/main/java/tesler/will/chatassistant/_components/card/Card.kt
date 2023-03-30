@@ -1,5 +1,9 @@
 package tesler.will.chatassistant._components.card
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -12,75 +16,68 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.chat.ChatSection
+import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.speechinput.SpeechInputSection
-import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.modifiers.noRippleClickable
-import tesler.will.chatassistant.preview.Previews
-import tesler.will.chatassistant.speechinput.ISpeechInputManager
+import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
-fun Card() {
-    val speechManager = koinInject<ISpeechInputManager>()
+fun Card(defaultVisible: Boolean = false) {
+    val ENTRANCE_ANIM_SPEED_MS = 500
 
-    var state by remember { mutableStateOf(State.RECEIVING_INPUT) }
+    var visible by remember { mutableStateOf(defaultVisible) }
 
     val shape = RoundedCornerShape(MaterialTheme.spacing.large)
 
-    val speechListener = remember {
-        object : ISpeechInputManager.Listener {
-            override fun onSpeechFinished(value: String?) {
-                state = State.SENDING_INPUT
-            }
-        }
+    LaunchedEffect(Unit) {
+        visible = true
     }
 
-    DisposableEffect(Unit) {
-        speechManager.addListener(speechListener)
-        onDispose {
-            speechManager.removeListener(speechListener)
-        }
-    }
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(MaterialTheme.spacing.medium)
-            .border(BorderStroke(0.dp, Color.Black), shape)
-            .clip(shape)
-            .noRippleClickable {},
-        color = MaterialTheme.colors.surface
+    AnimatedVisibility(
+        visible,
+        enter = slideInVertically(
+            tween(ENTRANCE_ANIM_SPEED_MS, easing = LinearOutSlowInEasing),
+            initialOffsetY = {fullHeight ->  fullHeight}
+        )
     ) {
-        Column(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.spacing.xlarge, MaterialTheme.spacing.xxlarge),
-            verticalArrangement = Arrangement.SpaceBetween
+                .wrapContentHeight()
+                .padding(0.dp, MaterialTheme.spacing.medium)
+                .border(BorderStroke(0.dp, Color.Black), shape)
+                .clip(shape)
+                .noRippleClickable {},
+            color = MaterialTheme.colors.surface
         ) {
-            ChatSection()
-
-            Box(
-                modifier = Modifier.weight(1f, false)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Bottom
             ) {
-                SpeechInputSection()
+
+                Box(
+                    modifier = Modifier.weight(1f, false)
+                ) {
+                    ChatSection()
+                }
+
+                Box(
+                    modifier = Modifier
+                ) {
+                    SpeechInputSection()
+                }
             }
         }
     }
-}
-
-enum class State {
-    RECEIVING_INPUT,
-    SENDING_INPUT,
-    PLAYING_RESPONSE
 }
 
 @Preview
 @Composable
 fun CardPreview() {
     Previews.Wrap(mainTestModule, true) {
-        Card()
+        Card(true)
     }
 }

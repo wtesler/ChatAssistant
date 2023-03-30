@@ -11,7 +11,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager,
     private var pendingText: String? = null
     private var hasInit: Boolean = false
 
-    override fun start() {
+    override fun init() {
         if (tts == null) {
             tts = TextToSpeech(context, this)
         } else {
@@ -19,12 +19,16 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager,
         }
     }
 
-    override fun stop() {
-        tts?.stop()
+    override fun destroy() {
         tts?.shutdown()
         tts = null
         pendingText = null
         hasInit = false
+    }
+
+    override fun stop() {
+        tts?.stop()
+        pendingText = null
     }
 
     override fun speak(text: String) {

@@ -8,7 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import tesler.will.chatassistant.modules.main.mainTestModule
-import tesler.will.chatassistant.preview.Previews
+import tesler.will.chatassistant._components.preview.Previews
 
 @Composable
 fun PermissionWrapper(activity: Activity?, content: @Composable () -> Unit) {

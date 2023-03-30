@@ -1,39 +1,35 @@
 package tesler.will.chatassistant._components.speechinput
 
-import androidx.compose.foundation.Image
+import android.speech.SpeechRecognizer.ERROR_NO_MATCH
+import android.speech.SpeechRecognizer.ERROR_SPEECH_TIMEOUT
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter.Companion.tint
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import tesler.will.chatassistant.R
+import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
+import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.modules.main.mainTestModule
-import tesler.will.chatassistant.preview.Previews
-import tesler.will.chatassistant.server.ApiService
-import tesler.will.chatassistant.server.models.chat.ChatUpdateRequest
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
+import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
 fun SpeechInputSection(initialState: State = State.ACTIVE) {
     val speechInputManager = koinInject<ISpeechInputManager>()
     val speechOutputManager = koinInject<ISpeechOutputManager>()
     val chatManager = koinInject<IChatManager>()
-    val apiService = koinInject<ApiService>()
 
     var state by remember { mutableStateOf(initialState) }
     var chat by remember { mutableStateOf(ChatModel()) }
-    val composableScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     val speechListener = remember {
         object : ISpeechInputManager.Listener {
@@ -49,8 +45,9 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
                 if (statusCode == null) {
                     return
                 }
-                if (statusCode == 7) {
+                if (statusCode == ERROR_NO_MATCH || statusCode == ERROR_SPEECH_TIMEOUT) {
                     chat.text = "Did not receive any speech."
+                    chat.state = ChatModel.State.ERROR
                     speechInputManager.stop()
                     state = State.READY
                 } else {
@@ -60,60 +57,56 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
             }
 
             override fun onSpeechFinished(value: String?) {
-                speechInputManager.stop()
-
-                if (value == null) {
-                    state = State.READY
-                    return
-                }
-
                 state = State.WAITING
-
-                composableScope.launch {
-                    val response = apiService.updateChat(ChatUpdateRequest(value))
-
-                    chat.state = ChatModel.State.CREATED
-                    chatManager.updateChat(chat)
-
-                    val responseChat = ChatModel(response.message, ChatModel.State.CREATED)
-                    chatManager.addChat(responseChat)
-
-                    chat = ChatModel()
-                    state = State.READY
-
-                    speechOutputManager.speak(response.message)
-                }
+                chatManager.submitChat(value, scope)
             }
         }
     }
 
-    val start = remember {
-        {
-            val numChats = chatManager.getChats().size
-            val defaultMessage = if (numChats == 0) "Hi, how can I help?" else ""
-
-            chat = ChatModel(defaultMessage)
-            chatManager.addChat(chat)
-            speechInputManager.start()
+    val chatListener = remember {
+        object : IChatManager.Listener {
+            override fun onChatSubmitResponse(isSuccess: Boolean, value: String?) {
+                state = State.READY
+            }
         }
     }
 
-    DisposableEffect(Unit) {
-        speechInputManager.addListener(speechListener)
+    val start = {
+        state = State.ACTIVE
+
+        val numChats = chatManager.getChats().size
+        val defaultMessage = if (numChats == 0) "Hi, how can I help?" else ""
+
+        chat = ChatModel(defaultMessage)
+        chatManager.addChat(chat)
+
+        speechInputManager.start()
+    }
+
+    val onStartClicked = {
+        speechOutputManager.stop()
+        chatManager.clearErrorChats()
         start()
-        speechOutputManager.start()
+    }
+
+    DisposableEffect(Unit) {
+        chatManager.addListener(chatListener)
+        speechInputManager.addListener(speechListener)
+        speechInputManager.init()
+        start()
 
         onDispose {
-            speechInputManager.stop()
+            chatManager.removeListener(chatListener)
+            speechInputManager.destroy()
             speechInputManager.removeListener(speechListener)
-            speechOutputManager.stop()
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentWidth(),
+            .wrapContentWidth()
+            .padding(0.dp, MaterialTheme.spacing.xlarge),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -126,11 +119,7 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
                     color = MaterialTheme.colors.onSurface,
                     strokeWidth = 5.dp
                 )
-                State.READY -> Image(
-                    painter = painterResource(id = R.drawable.microphone),
-                    contentDescription = "Default Image Icon",
-                    colorFilter = tint(MaterialTheme.colors.onSurface)
-                )
+                State.READY -> SpeechInputStartButton(onStartClicked)
             }
         }
     }

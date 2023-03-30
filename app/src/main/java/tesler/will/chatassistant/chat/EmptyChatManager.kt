@@ -1,5 +1,7 @@
 package tesler.will.chatassistant.chat
 
+import kotlinx.coroutines.CoroutineScope
+
 class EmptyChatManager : IChatManager {
     override fun getChats(): ArrayList<ChatModel> {
         return ArrayList()
@@ -12,6 +14,12 @@ class EmptyChatManager : IChatManager {
     }
 
     override fun clearChats() {
+    }
+
+    override fun clearErrorChats() {
+    }
+
+    override fun submitChat(value: String?, scope: CoroutineScope) {
     }
 
     override fun addListener(listener: IChatManager.Listener) {

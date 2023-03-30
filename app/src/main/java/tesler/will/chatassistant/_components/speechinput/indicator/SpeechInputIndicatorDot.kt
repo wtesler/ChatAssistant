@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.math.MathUtils
 import org.koin.compose.koinInject
 import tesler.will.chatassistant.modules.speech.speechTestModule
-import tesler.will.chatassistant.preview.Previews
+import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import kotlin.math.pow
 

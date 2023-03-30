@@ -3,6 +3,12 @@ package tesler.will.chatassistant.speechinput
 import tesler.will.chatassistant.speechinput.ISpeechInputManager.*
 
 class EmptySpeechInputManager : ISpeechInputManager {
+    override fun init() {
+    }
+
+    override fun destroy() {
+    }
+
     override fun start() {
     }
 

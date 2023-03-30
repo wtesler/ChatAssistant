@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import tesler.will.chatassistant.modifiers.noRippleClickable
 import tesler.will.chatassistant.modules.main.mainTestModule
-import tesler.will.chatassistant.preview.Previews
+import tesler.will.chatassistant._components.preview.Previews
 
 @Composable
 fun Background(activity: Activity?, content: @Composable () -> Unit) {

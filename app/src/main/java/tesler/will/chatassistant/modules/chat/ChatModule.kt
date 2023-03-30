@@ -5,5 +5,5 @@ import tesler.will.chatassistant.chat.ChatManager
 import tesler.will.chatassistant.chat.IChatManager
 
 val chatModule = module {
-    single<IChatManager> { ChatManager() }
+    single<IChatManager> { ChatManager(get()) }
 }

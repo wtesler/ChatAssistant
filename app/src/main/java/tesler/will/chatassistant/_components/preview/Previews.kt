@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.preview
+package tesler.will.chatassistant._components.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext

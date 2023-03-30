@@ -22,7 +22,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
 
     private val listeners = mutableListOf<Listener>()
 
-    override fun start() {
+    override fun init() {
         if (speechRecognizer != null) {
             throw Exception("Already started. You must call stop first.")
         }
@@ -44,6 +44,19 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
                 ::onError
             )
         )
+    }
+
+    override fun destroy() {
+        if (speechRecognizer != null) {
+            speechRecognizer?.destroy()
+            speechRecognizer = null
+        }
+    }
+
+    override fun start() {
+        if (speechRecognizer == null) {
+            throw Exception("Must call init before starting.")
+        }
 
         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
@@ -62,14 +75,13 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
         }
 
         speechRecognizer?.startListening(recognizerIntent)
+
+        for (listener in listeners) {
+            listener.onListeningStarted()
+        }
     }
 
     override fun stop() {
-        if (speechRecognizer != null) {
-            speechRecognizer?.destroy()
-            speechRecognizer = null
-        }
-
         isStarted = null
         isFinished = null
         text = null
