@@ -11,23 +11,37 @@ class StrictModeHelper {
             StrictMode.enableDefaults()
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder()
-                    .detectAllExcept("onUntaggedSocket")
+                    .detectAllExcept(listOf("onUntaggedSocket"))
+                    .build()
+            )
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAllExcept(listOf("onReadFromDisk"))
                     .build()
             )
         }
 
-        private fun StrictMode.VmPolicy.Builder.detectAllExcept(ignoredViolation: String): StrictMode.VmPolicy.Builder {
+        private fun StrictMode.VmPolicy.Builder.detectAllExcept(ignoredViolations: List<String>): StrictMode.VmPolicy.Builder {
             return detectAll()
                 .penaltyListener(
                     Executors.newSingleThreadExecutor()
                 ) {
-                    it.filter(ignoredViolation)
+                    it.filter(ignoredViolations)
                 }
         }
 
-        private fun Violation.filter(ignoredViolation: String) {
+        private fun StrictMode.ThreadPolicy.Builder.detectAllExcept(ignoredViolations: List<String>): StrictMode.ThreadPolicy.Builder {
+            return detectAll()
+                .penaltyListener(
+                    Executors.newSingleThreadExecutor()
+                ) {
+                    it.filter(ignoredViolations)
+                }
+        }
+
+        private fun Violation.filter(ignoredViolations: List<String>) {
             val violationMethodName = stackTrace[0].methodName
-            if (!violationMethodName.equals(ignoredViolation, true)) {
+            if (!ignoredViolations.contains(violationMethodName)) {
                 for (item in stackTrace) {
                     Log.d("StrictMode", item.toString())
                 }

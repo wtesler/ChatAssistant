@@ -57,8 +57,10 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
             }
 
             override fun onSpeechFinished(value: String?) {
-                state = State.WAITING
-                chatManager.submitChat(value, scope)
+                if (state != State.WAITING) {
+                    state = State.WAITING
+                    chatManager.submitChat(value, scope)
+                }
             }
         }
     }
