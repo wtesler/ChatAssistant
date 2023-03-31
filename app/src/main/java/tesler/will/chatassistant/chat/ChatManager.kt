@@ -65,11 +65,14 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
 
     override fun submitChat(chatModel: ChatModel, scope: CoroutineScope) {
         scope.launch {
+            val chatsCopy = ArrayList(chats)
+            chatsCopy.add(chatModel)
+
             var responseChat = ChatModel()
             var message = ""
             var isSuccess = false
             try {
-                val response = apiService.updateChat(ChatUpdateRequest.build(chats))
+                val response = apiService.updateChat(ChatUpdateRequest.build(chatsCopy))
                 message = response.message
                 responseChat = ChatModel(message, CREATED, false)
                 isSuccess = true

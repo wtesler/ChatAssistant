@@ -2,7 +2,7 @@ package tesler.will.chatassistant.server.models.chat
 
 import tesler.will.chatassistant.chat.ChatModel
 
-data class ChatUpdateRequest(var chatModels: List<ChatUpdateRequestModel>) {
+data class ChatUpdateRequest(var chats: List<ChatUpdateRequestModel>) {
     companion object {
         fun build(chatModels: List<ChatModel>): ChatUpdateRequest {
             val models = chatModels.filter { x -> x.state != ChatModel.State.ERROR }.map { x ->
