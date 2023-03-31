@@ -1,5 +1,6 @@
 package tesler.will.chatassistant._components.chat
 
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.android.awaitFrame
@@ -31,6 +33,7 @@ fun ChatSection() {
     val speechOutputManager = koinInject<ISpeechOutputManager>()
 
     val chats = remember { mutableStateListOf<ChatModel>() }
+    var height by remember { mutableStateOf(0) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -46,19 +49,20 @@ fun ChatSection() {
         }
     }
 
-    val scrollToLastItem = { shouldAnimate: Boolean ->
-        if (chats.size > 0) {
-            coroutineScope.launch {
-                awaitFrame()
-                if (listState.isScrollInProgress) {
-                    listState.stopScroll()
-                }
-                if (shouldAnimate) {
-                    listState.animateScrollToItem(chats.lastIndex)
-                } else {
-                    listState.scrollToItem(chats.lastIndex)
-                }
+    val scrollToEnd = {
+        coroutineScope.launch {
+            awaitFrame()
+            listState.scrollBy(height.toFloat() + 1)
+        }
+    }
+
+    val scrollToLastItem = {
+        coroutineScope.launch {
+            awaitFrame()
+            if (listState.isScrollInProgress) {
+                listState.stopScroll()
             }
+            listState.animateScrollToItem(chats.lastIndex)
         }
     }
 
@@ -88,7 +92,7 @@ fun ChatSection() {
             override fun onChatSubmitResponse(isSuccess: Boolean, value: String?) {
                 if (isSuccess && value != null) {
                     speechOutputManager.speak(value)
-                    scrollToLastItem(true)
+                    scrollToLastItem()
                 }
             }
         }
@@ -96,16 +100,12 @@ fun ChatSection() {
 
     val speechInputListener = remember {
         object : ISpeechInputManager.Listener {
-            override fun onListeningStarted() {
-                scrollToLastItem(true)
-            }
-
             override fun onText(value: String?) {
-                scrollToLastItem(false)
+                scrollToEnd()
             }
 
             override fun onError(statusCode: Int?) {
-                scrollToLastItem(false)
+                scrollToEnd()
             }
         }
     }
@@ -130,6 +130,7 @@ fun ChatSection() {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .onGloballyPositioned { height = it.size.height }
     ) {
         LazyColumn(
             modifier = Modifier
@@ -172,8 +173,8 @@ fun ChatSection() {
 private fun ChatSectionPreview() {
     Previews.Wrap(mainTestModule, true) {
         val chatManager = koinInject<IChatManager>()
-        chatManager.addChat(ChatModel("This is a first test message", ChatModel.State.CREATED))
-        chatManager.addChat(ChatModel("This is a second test message", ChatModel.State.CREATED))
+        chatManager.addChat(ChatModel("This is a test message", ChatModel.State.CREATED, true))
+        chatManager.addChat(ChatModel("This is a test response", ChatModel.State.CREATED, false))
 
         ChatSection()
     }
