@@ -9,25 +9,23 @@ import retrofit2.converter.gson.GsonConverterFactory
 import tesler.will.chatassistant.BuildConfig
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant.server.ApiService
-import tesler.will.chatassistant.server.auth.AuthInterceptor
-import tesler.will.chatassistant.server.auth.UnsafeDevHttpClientBuilder
+import tesler.will.chatassistant.server.interceptor.ServerInterceptor
+import tesler.will.chatassistant.server.interceptor.UnsafeDevHttpClientBuilder
 import java.util.concurrent.TimeUnit
 
 val serverModule = module {
     factory { provideApiService(get()) }
-
-    factory { AuthInterceptor() }
-    factory { provideOkHttpClient(get()) }
     single { provideRetrofit(get(), androidContext()) }
+    factory { provideOkHttpClient() }
 }
 
 fun provideApiService(retrofit: Retrofit): ApiService {
     return retrofit.create(ApiService::class.java)
 }
 
-fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+fun provideOkHttpClient(): OkHttpClient {
     return OkHttpClient().newBuilder()
-        .addInterceptor(authInterceptor)
+        .addInterceptor(ServerInterceptor())
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .build()

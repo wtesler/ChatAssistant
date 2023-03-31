@@ -1,5 +1,5 @@
 package tesler.will.chatassistant.server.models.chat
 
-data class ChatUpdateResponse(
+class ChatUpdateResponse(
     val message: String
 )

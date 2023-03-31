@@ -1,4 +1,4 @@
-package tesler.will.chatassistant.server.auth
+package tesler.will.chatassistant.server.interceptor
 
 import android.annotation.SuppressLint
 import okhttp3.OkHttpClient
@@ -50,6 +50,7 @@ class UnsafeDevHttpClientBuilder {
             return builder
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
+                .addInterceptor(ServerInterceptor())
                 .build()
         }
     }

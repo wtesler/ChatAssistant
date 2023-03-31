@@ -56,33 +56,32 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
     }
 
     override fun clearErrorChats() {
-        chats.removeIf{chat -> chat.state == ERROR}
+        chats.removeIf { chat -> chat.state == ERROR }
 
         for (listener in listeners) {
-            listener.onErrorChatsCleared();
+            listener.onErrorChatsCleared()
         }
     }
 
     override fun submitChat(chatModel: ChatModel, scope: CoroutineScope) {
         scope.launch {
+            var responseChat = ChatModel()
+            var message = ""
+            var isSuccess = false
             try {
-                val response = apiService.updateChat(ChatUpdateRequest(chatModel.text))
-                val message = response.message
-
-                val responseChat = ChatModel(message, CREATED, false)
-                addChat(chatModel)
-                addChat(responseChat)
-
-                for (listener in listeners) {
-                    listener.onChatSubmitResponse(true, message)
-                }
+                val response = apiService.updateChat(ChatUpdateRequest.build(chats))
+                message = response.message
+                responseChat = ChatModel(message, CREATED, false)
+                isSuccess = true
             } catch (e: HttpException) {
-                val message = "${e.code()}: ${e.message()}"
-                val responseChat = ChatModel(message, ERROR)
+                message = "${e.code()}: ${e.message()}"
+                responseChat = ChatModel(message, ERROR)
+                isSuccess = false
+            } finally {
                 addChat(chatModel)
                 addChat(responseChat)
                 for (listener in listeners) {
-                    listener.onChatSubmitResponse(false, null)
+                    listener.onChatSubmitResponse(isSuccess, message)
                 }
             }
         }

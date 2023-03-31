@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Chat Assistant</string>
 
+    <!-- Database connection strings -->
     <string name="development_server_url">https://10.0.0.109:8080/</string>
     <string name="production_server_url">https://will-chat-assistant.uc.r.appspot.com/</string>
 </resources>
