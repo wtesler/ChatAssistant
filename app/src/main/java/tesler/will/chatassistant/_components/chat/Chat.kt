@@ -7,11 +7,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant._components.preview.Previews
-import tesler.will.chatassistant._components.speechinput.State
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.ChatModel.State.*
 import tesler.will.chatassistant.ui.theme.spacing
@@ -32,18 +29,13 @@ fun Chat(chatModel: ChatModel) {
     val hPadding = MaterialTheme.spacing.large
     val vPadding = MaterialTheme.spacing.xxlarge
 
-    val bottomPadding = when (chatModel.state) {
-        CREATING -> MaterialTheme.spacing.small
-        else -> vPadding
-    }
-
     if (chatModel.text.isNotBlank()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(backgroundColor)
-                .padding(hPadding, vPadding, hPadding, bottomPadding),
+                .padding(hPadding, vPadding),
             contentAlignment = Center
         ) {
             Text(
@@ -54,8 +46,6 @@ fun Chat(chatModel: ChatModel) {
                 color = MaterialTheme.colors.onSurface
             )
         }
-    } else if (chatModel.state == CREATING) {
-        ElevationShadow()
     }
 }
 

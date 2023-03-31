@@ -23,8 +23,8 @@ fun ElevationShadow() {
             .background(MaterialTheme.colors.secondary)
     )
 
-    val overflowHeight = (6.5).dp
-    val shadowColor = Color(0x90000000)
+    val overflowHeight = (10).dp
+    val shadowColor = Color(0x45000000)
 
     OverflowShadow(
         modifier = Modifier

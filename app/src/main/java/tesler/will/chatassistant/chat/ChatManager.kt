@@ -63,22 +63,14 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
         }
     }
 
-    override fun submitChat(value: String?, scope: CoroutineScope) {
-        if (value == null) {
-            return
-        }
-
-        var pendingChat: ChatModel? = null
-        if (chats.size > 0) {
-            pendingChat = chats.last()
-        }
-
+    override fun submitChat(chatModel: ChatModel, scope: CoroutineScope) {
         scope.launch {
             try {
-                val response = apiService.updateChat(ChatUpdateRequest(value))
+                val response = apiService.updateChat(ChatUpdateRequest(chatModel.text))
                 val message = response.message
 
                 val responseChat = ChatModel(message, CREATED, false)
+                addChat(chatModel)
                 addChat(responseChat)
 
                 for (listener in listeners) {
@@ -87,14 +79,10 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
             } catch (e: HttpException) {
                 val message = "${e.code()}: ${e.message()}"
                 val responseChat = ChatModel(message, ERROR)
+                addChat(chatModel)
                 addChat(responseChat)
                 for (listener in listeners) {
                     listener.onChatSubmitResponse(false, null)
-                }
-            } finally {
-                if (pendingChat != null) {
-                    pendingChat.state = CREATED
-                    updateChat(pendingChat)
                 }
             }
         }

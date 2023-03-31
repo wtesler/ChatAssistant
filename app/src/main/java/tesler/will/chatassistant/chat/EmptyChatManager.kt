@@ -19,7 +19,7 @@ class EmptyChatManager : IChatManager {
     override fun clearErrorChats() {
     }
 
-    override fun submitChat(value: String?, scope: CoroutineScope) {
+    override fun submitChat(chatModel: ChatModel, scope: CoroutineScope) {
     }
 
     override fun addListener(listener: IChatManager.Listener) {

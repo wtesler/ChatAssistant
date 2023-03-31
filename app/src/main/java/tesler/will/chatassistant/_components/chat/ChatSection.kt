@@ -47,15 +47,17 @@ fun ChatSection() {
     }
 
     val scrollToLastItem = { shouldAnimate: Boolean ->
-        coroutineScope.launch {
-            awaitFrame()
-            if (listState.isScrollInProgress) {
-                listState.stopScroll()
-            }
-            if (shouldAnimate) {
-                listState.animateScrollToItem(chats.lastIndex)
-            } else {
-                listState.scrollToItem(chats.lastIndex)
+        if (chats.size > 0) {
+            coroutineScope.launch {
+                awaitFrame()
+                if (listState.isScrollInProgress) {
+                    listState.stopScroll()
+                }
+                if (shouldAnimate) {
+                    listState.animateScrollToItem(chats.lastIndex)
+                } else {
+                    listState.scrollToItem(chats.lastIndex)
+                }
             }
         }
     }

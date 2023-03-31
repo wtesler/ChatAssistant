@@ -25,7 +25,7 @@ import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
 fun Card(defaultVisible: Boolean = false) {
-    val ENTRANCE_ANIM_SPEED_MS = 500
+    val ENTRANCE_ANIM_SPEED_MS = 350
 
     var visible by remember { mutableStateOf(defaultVisible) }
 

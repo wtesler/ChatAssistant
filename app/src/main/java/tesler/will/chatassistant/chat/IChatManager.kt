@@ -8,7 +8,7 @@ interface IChatManager {
     fun updateChat(chatModel: ChatModel)
     fun clearChats()
     fun clearErrorChats()
-    fun submitChat(value: String?, scope: CoroutineScope)
+    fun submitChat(chatModel: ChatModel, scope: CoroutineScope)
     fun addListener(listener: Listener)
     fun removeListener(listener: Listener)
 

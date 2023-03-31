@@ -5,6 +5,7 @@ import android.speech.SpeechRecognizer.ERROR_SPEECH_TIMEOUT
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
+import tesler.will.chatassistant.ui.theme.spacing
 
 enum class State {
     ACTIVE,
@@ -46,7 +48,6 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
                 }
                 chat.text = value
                 text = chat.text
-                chatManager.updateChat(chat)
             }
 
             override fun onError(statusCode: Int?) {
@@ -62,13 +63,17 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
                     chat.text = "Error. Status code $statusCode."
                 }
                 text = chat.text
-                chatManager.updateChat(chat)
+                chatManager.addChat(chat)
             }
 
             override fun onSpeechFinished(value: String?) {
                 if (state != State.WAITING) {
                     state = State.WAITING
-                    chatManager.submitChat(value, scope)
+                    if (value != null) {
+                        chat.text = value
+                    }
+                    val chatToSubmit = chat.copy(state = ChatModel.State.CREATED)
+                    chatManager.submitChat(chatToSubmit, scope)
                 }
             }
         }
@@ -90,7 +95,6 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
 
         text = defaultMessage
         chat = ChatModel(defaultMessage)
-        chatManager.addChat(chat)
 
         speechInputManager.start()
     }
@@ -120,7 +124,31 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
             .wrapContentWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (state == State.READY) {
+        if (state == State.ACTIVE || state == State.WAITING) {
+            if (text.isNotBlank()) {
+                val hPadding = MaterialTheme.spacing.large
+                val topPadding = MaterialTheme.spacing.xxlarge
+                val bottomPadding = MaterialTheme.spacing.small
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(hPadding, topPadding, hPadding, bottomPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .wrapContentWidth(),
+                        text = text,
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.onSurface
+                    )
+                }
+            }
+        }
+
+        if (state == State.READY || (state == State.ACTIVE && text.isEmpty())) {
             ElevationShadow()
         }
 
