@@ -59,7 +59,7 @@ fun SpeechInputIndicator() {
 
 @Preview
 @Composable
-fun SpeechInputIndicatorPreview() {
+private fun SpeechInputIndicatorPreview() {
     Previews.Wrap(speechTestModule, true) {
         SpeechInputIndicator()
     }

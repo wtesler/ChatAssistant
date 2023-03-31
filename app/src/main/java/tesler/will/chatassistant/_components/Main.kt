@@ -28,7 +28,7 @@ private fun Content(activity: Activity?) {
 
 @Preview
 @Composable
-fun MainPreview() {
+private fun MainPreview() {
     Previews.Wrap(mainTestModule, true) {
         Content(null)
     }

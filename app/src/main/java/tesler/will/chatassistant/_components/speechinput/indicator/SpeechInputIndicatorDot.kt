@@ -107,7 +107,7 @@ fun SpeechInputIndicatorDot(
 
 @Preview
 @Composable
-fun SpeechInputDotPreview() {
+private fun SpeechInputDotPreview() {
     Previews.Wrap(speechTestModule, true) {
         SpeechInputIndicatorDot(1000, 2f, 0, 1f, 1.5f)
     }

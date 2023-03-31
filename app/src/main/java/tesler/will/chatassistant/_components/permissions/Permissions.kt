@@ -39,7 +39,7 @@ fun PermissionWrapper(activity: Activity?, content: @Composable () -> Unit) {
 
 @Preview
 @Composable
-fun DefaultPreview() {
+private fun DefaultPreview() {
     Previews.Wrap(mainTestModule, true) {
 
     }

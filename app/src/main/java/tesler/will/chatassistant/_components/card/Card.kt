@@ -76,7 +76,7 @@ fun Card(defaultVisible: Boolean = false) {
 
 @Preview
 @Composable
-fun CardPreview() {
+private fun CardPreview() {
     Previews.Wrap(mainTestModule, true) {
         Card(true)
     }

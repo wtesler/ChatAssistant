@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+import tesler.will.chatassistant._components.chat.ElevationShadow
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
@@ -19,7 +20,12 @@ import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
-import tesler.will.chatassistant.ui.theme.spacing
+
+enum class State {
+    ACTIVE,
+    WAITING,
+    READY
+}
 
 @Composable
 fun SpeechInputSection(initialState: State = State.ACTIVE) {
@@ -28,6 +34,7 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
     val chatManager = koinInject<IChatManager>()
 
     var state by remember { mutableStateOf(initialState) }
+    var text by remember { mutableStateOf("") }
     var chat by remember { mutableStateOf(ChatModel()) }
     val scope = rememberCoroutineScope()
 
@@ -38,6 +45,7 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
                     return
                 }
                 chat.text = value
+                text = chat.text
                 chatManager.updateChat(chat)
             }
 
@@ -53,6 +61,7 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
                 } else {
                     chat.text = "Error. Status code $statusCode."
                 }
+                text = chat.text
                 chatManager.updateChat(chat)
             }
 
@@ -79,6 +88,7 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
         val numChats = chatManager.getChats().size
         val defaultMessage = if (numChats == 0) "Hi, how can I help?" else ""
 
+        text = defaultMessage
         chat = ChatModel(defaultMessage)
         chatManager.addChat(chat)
 
@@ -107,12 +117,16 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentWidth()
-            .padding(0.dp, MaterialTheme.spacing.xlarge),
+            .wrapContentWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (state == State.READY) {
+            ElevationShadow()
+        }
+
         Box(
-            modifier = Modifier.height(40.dp),
+            modifier = Modifier
+                .height(90.dp),
             contentAlignment = Alignment.Center
         ) {
             when (state) {
@@ -127,16 +141,10 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
     }
 }
 
-enum class State {
-    ACTIVE,
-    WAITING,
-    READY
-}
-
 @Preview
 @Composable
-fun SpeechInputSectionPreview() {
+private fun SpeechInputSectionPreview() {
     Previews.Wrap(mainTestModule, true) {
-        SpeechInputSection(State.READY)
+        SpeechInputSection(State.ACTIVE)
     }
 }

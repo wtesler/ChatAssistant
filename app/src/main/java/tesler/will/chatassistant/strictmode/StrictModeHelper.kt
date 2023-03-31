@@ -45,6 +45,7 @@ class StrictModeHelper {
                 for (item in stackTrace) {
                     Log.d("StrictMode", item.toString())
                 }
+                Log.d("StrictMode", "----------")
             }
         }
     }

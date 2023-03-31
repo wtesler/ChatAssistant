@@ -31,7 +31,7 @@ fun Background(activity: Activity?, content: @Composable () -> Unit) {
 
 @Preview
 @Composable
-fun BackgroundPreview() {
+private fun BackgroundPreview() {
     Previews.Wrap(mainTestModule, false) {
         Background(null) {
             Text(text = "Hello!", color = MaterialTheme.colors.onSurface)
