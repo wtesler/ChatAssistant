@@ -1,5 +1,8 @@
 package tesler.will.chatassistant._components.chat
 
+import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.Box
@@ -13,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +38,7 @@ fun ChatSection() {
 
     val chats = remember { mutableStateListOf<ChatModel>() }
     var height by remember { mutableStateOf(0) }
+    var hasManuallyInterfered by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -52,17 +57,27 @@ fun ChatSection() {
     val scrollToEnd = {
         coroutineScope.launch {
             awaitFrame()
-            listState.scrollBy(height.toFloat() + 1)
+            if (!hasManuallyInterfered) {
+                listState.scrollBy(height.toFloat() + 1)
+            }
         }
     }
 
-    val scrollToLastItem = {
+    val scrollToLastItem = { additionalScrollY: Float ->
         coroutineScope.launch {
             awaitFrame()
-            if (listState.isScrollInProgress) {
-                listState.stopScroll()
+            if (!hasManuallyInterfered) {
+                listState.animateScrollToItem(chats.lastIndex, additionalScrollY.toInt())
             }
-            listState.animateScrollToItem(chats.lastIndex)
+        }
+    }
+
+    val preventAutoScroll = {
+        if (!hasManuallyInterfered) {
+            hasManuallyInterfered = true
+            coroutineScope.launch {
+                listState.stopScroll(MutatePriority.UserInput)
+            }
         }
     }
 
@@ -81,6 +96,10 @@ fun ChatSection() {
                 }
             }
 
+            override fun onChatRemoved(chatId: String) {
+                chats.removeIf { x -> x.id == chatId }
+            }
+
             override fun onChatsCleared() {
                 chats.clear()
             }
@@ -89,10 +108,20 @@ fun ChatSection() {
                 chats.removeIf { chat -> chat.state == ChatModel.State.ERROR }
             }
 
+            override fun onChatSubmitResponseStarted() {
+                speechOutputManager.reset()
+                hasManuallyInterfered = false
+                // scrollToEnd()
+            }
+
+            override fun onChatSubmitResponsePartial(value: String) {
+                speechOutputManager.queueSpeech(value)
+                scrollToLastItem(0f)
+            }
+
             override fun onChatSubmitResponse(isSuccess: Boolean, value: String?) {
                 if (isSuccess && value != null) {
-                    speechOutputManager.speak(value)
-                    scrollToLastItem()
+                    speechOutputManager.flushSpeech()
                 }
             }
         }
@@ -100,8 +129,12 @@ fun ChatSection() {
 
     val speechInputListener = remember {
         object : ISpeechInputManager.Listener {
+            override fun onListeningStarted() {
+                hasManuallyInterfered = false
+            }
+
             override fun onText(value: String?) {
-                scrollToEnd()
+                // scrollToEnd()
             }
 
             override fun onError(statusCode: Int?) {
@@ -135,11 +168,22 @@ fun ChatSection() {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .pointerInput("tap_input") {
+                    detectTapGestures(
+                        onPress = { preventAutoScroll() },
+                        onTap = { preventAutoScroll() }
+                    )
+                }
+                .pointerInput("drag_input") {
+                    detectDragGestures(
+                        onDrag = { _, _ -> preventAutoScroll() }
+                    )
+                },
             state = listState
         ) {
             items(chats) { chat ->
-                Chat(chat)
+                Chat(Modifier, chat)
             }
         }
 

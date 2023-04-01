@@ -10,6 +10,9 @@ class EmptyChatManager : IChatManager {
     override fun addChat(chatModel: ChatModel) {
     }
 
+    override fun removeChat(chatId: String) {
+    }
+
     override fun updateChat(chatModel: ChatModel) {
     }
 

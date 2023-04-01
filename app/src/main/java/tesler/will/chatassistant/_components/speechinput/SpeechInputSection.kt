@@ -81,6 +81,10 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
 
     val chatListener = remember {
         object : IChatManager.Listener {
+            override fun onChatSubmitResponseStarted() {
+                text = ""
+            }
+
             override fun onChatSubmitResponse(isSuccess: Boolean, value: String?) {
                 state = State.READY
             }

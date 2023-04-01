@@ -4,12 +4,24 @@ class EmptySpeechOutputManager : ISpeechOutputManager {
     override fun init() {
     }
 
+    override fun reset() {
+    }
+
     override fun destroy() {
     }
 
     override fun stop() {
     }
 
-    override fun speak(text: String) {
+    override fun addListener(listener: ISpeechOutputManager.Listener) {
+    }
+
+    override fun removeListener(listener: ISpeechOutputManager.Listener) {
+    }
+
+    override fun queueSpeech(text: String) {
+    }
+
+    override fun flushSpeech() {
     }
 }

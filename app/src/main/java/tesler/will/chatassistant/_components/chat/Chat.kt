@@ -14,7 +14,7 @@ import tesler.will.chatassistant.chat.ChatModel.State.*
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
-fun Chat(chatModel: ChatModel) {
+fun Chat(modifier: Modifier, chatModel: ChatModel) {
     var backgroundColor = MaterialTheme.colors.background;
     if (chatModel.state == ERROR) {
         backgroundColor = MaterialTheme.colors.error
@@ -31,7 +31,7 @@ fun Chat(chatModel: ChatModel) {
 
     if (chatModel.text.isNotBlank()) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(backgroundColor)
@@ -53,6 +53,6 @@ fun Chat(chatModel: ChatModel) {
 @Composable
 private fun ChatPreview() {
     Previews.Wrap(true) {
-        Chat(ChatModel("Hi, how can I help?", ChatModel.State.CREATED))
+        Chat(Modifier, ChatModel("Hi, how can I help?", ChatModel.State.CREATED))
     }
 }
