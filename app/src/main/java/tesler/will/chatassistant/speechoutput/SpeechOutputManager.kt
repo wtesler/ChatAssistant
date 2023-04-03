@@ -15,9 +15,6 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     private var pendingText: String? = null
     private var hasInit = false
     private var queuedSpeech = ""
-
-    private data class SpeechRecord(val utteranceId: String, val text: String)
-
     private var isMute = false
 
     private val listeners = mutableListOf<Listener>()
@@ -66,21 +63,19 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
             return
         }
 
-        val lastPeriod = queuedSpeech.lastIndexOf('.')
-        val lastColon = queuedSpeech.lastIndexOf(':')
-        val lastStopChar = maxOf(lastPeriod, lastColon)
+        val lastStopCharIndex = findLastStopCharIndex()
 
-        if (lastStopChar <= 0) {
+        if (lastStopCharIndex <= 0) {
             return
         }
 
-        val speechEndIndex = lastStopChar + 1
+        val speechEndIndex = lastStopCharIndex + 1
 
         val speech = queuedSpeech.substring(0, speechEndIndex)
 
         speakInternal(speech)
 
-        if (lastStopChar < queuedSpeech.length - 1) {
+        if (lastStopCharIndex < queuedSpeech.length - 1) {
             queuedSpeech = queuedSpeech.substring(speechEndIndex, queuedSpeech.length)
         } else {
             queuedSpeech = ""
@@ -123,5 +118,15 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
             val utteranceId = UUID.randomUUID().toString()
             tts?.speak(text, TextToSpeech.QUEUE_ADD, null, utteranceId)
         }
+    }
+
+    private fun findLastStopCharIndex(): Int {
+        val stopChars = arrayOf('.', ':', '!', '?')
+        var lastStopCharIndex = -1
+        for (char in stopChars) {
+            val lastIndex = queuedSpeech.lastIndexOf(char)
+            lastStopCharIndex = maxOf(lastStopCharIndex, lastIndex)
+        }
+        return lastStopCharIndex
     }
 }
