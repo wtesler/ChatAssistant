@@ -9,6 +9,7 @@ interface ISpeechOutputManager {
     fun removeListener(listener: Listener)
     fun queueSpeech(text: String)
     fun flushSpeech()
+    fun setMuted(isMuted: Boolean)
 
     interface Listener {
         fun onSpeechProgress(progress: Float) = run { }

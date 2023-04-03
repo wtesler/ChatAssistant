@@ -132,10 +132,11 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
                 isSuccess = true
             } catch (e: HttpException) {
                 message = "${e.code()}: ${e.message()}"
-                responseChat = responseChat.copy(text = message, state = ERROR)
                 isSuccess = false
                 removeChat(inputChatId)
-                addChat(responseChat)
+                responseChat.text = message
+                responseChat.state = ERROR
+                updateChat(responseChat)
             } finally {
                 for (listener in listeners) {
                     listener.onChatSubmitResponse(isSuccess, message)

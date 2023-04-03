@@ -15,6 +15,7 @@ import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.chat.ElevationShadow
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
+import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.IChatManager
@@ -30,13 +31,13 @@ enum class State {
 }
 
 @Composable
-fun SpeechInputSection(initialState: State = State.ACTIVE) {
+fun SpeechInputSection(initialState: State = State.ACTIVE, initialText: String = "") {
     val speechInputManager = koinInject<ISpeechInputManager>()
     val speechOutputManager = koinInject<ISpeechOutputManager>()
     val chatManager = koinInject<IChatManager>()
 
     var state by remember { mutableStateOf(initialState) }
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf(initialText) }
     var chat by remember { mutableStateOf(ChatModel()) }
     val scope = rememberCoroutineScope()
 
@@ -122,53 +123,66 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (state == State.ACTIVE || state == State.WAITING) {
-            if (text.isNotBlank()) {
-                val hPadding = MaterialTheme.spacing.large
-                val topPadding = MaterialTheme.spacing.xxlarge
-                val bottomPadding = MaterialTheme.spacing.small
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (state == State.READY || (state == State.ACTIVE && text.isEmpty())) {
+                ElevationShadow()
+            }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(hPadding, topPadding, hPadding, bottomPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
+            if (state == State.ACTIVE || state == State.WAITING) {
+                if (text.isNotBlank()) {
+                    val hPadding = MaterialTheme.spacing.large
+                    val topPadding = MaterialTheme.spacing.xxlarge
+                    val bottomPadding = MaterialTheme.spacing.small
+
+                    Box(
                         modifier = Modifier
-                            .wrapContentWidth(),
-                        text = text,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onSurface
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(hPadding, topPadding, hPadding, bottomPadding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .wrapContentWidth(),
+                            text = text,
+                            style = MaterialTheme.typography.body1,
+                            color = MaterialTheme.colors.onSurface
+                        )
+                    }
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .height(90.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                when (state) {
+                    State.ACTIVE -> SpeechInputIndicator()
+                    State.WAITING -> CircularProgressIndicator(
+                        color = MaterialTheme.colors.onSurface,
+                        strokeWidth = 5.dp
                     )
+                    State.READY -> SpeechInputStartButton(onStartClicked)
                 }
             }
         }
 
-        if (state == State.READY || (state == State.ACTIVE && text.isEmpty())) {
-            ElevationShadow()
-        }
-
-        Box(
-            modifier = Modifier
-                .height(90.dp),
-            contentAlignment = Alignment.Center
+        Box(modifier = Modifier
+            .wrapContentWidth()
+            .wrapContentHeight()
+            .align(Alignment.TopEnd)
+            .padding(MaterialTheme.spacing.medium)
         ) {
-            when (state) {
-                State.ACTIVE -> SpeechInputIndicator()
-                State.WAITING -> CircularProgressIndicator(
-                    color = MaterialTheme.colors.onSurface,
-                    strokeWidth = 5.dp
-                )
-                State.READY -> SpeechInputStartButton(onStartClicked)
-            }
+            SettingsButtonResolver(modifier=Modifier)
         }
     }
 }
@@ -177,6 +191,6 @@ fun SpeechInputSection(initialState: State = State.ACTIVE) {
 @Composable
 private fun SpeechInputSectionPreview() {
     Previews.Wrap(mainTestModule, true) {
-        SpeechInputSection(State.ACTIVE)
+        SpeechInputSection(State.ACTIVE, "Hi, how can I help?")
     }
 }

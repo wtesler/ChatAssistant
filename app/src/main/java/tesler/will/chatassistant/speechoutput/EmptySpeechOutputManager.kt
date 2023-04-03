@@ -24,4 +24,8 @@ class EmptySpeechOutputManager : ISpeechOutputManager {
 
     override fun flushSpeech() {
     }
+
+    override fun setMuted(isMuted: Boolean) {
+        TODO("Not yet implemented")
+    }
 }

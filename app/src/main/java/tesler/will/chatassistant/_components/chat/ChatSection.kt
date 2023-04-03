@@ -1,5 +1,6 @@
 package tesler.will.chatassistant._components.chat
 
+import android.util.Log
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -67,7 +68,7 @@ fun ChatSection() {
         coroutineScope.launch {
             awaitFrame()
             if (!hasManuallyInterfered) {
-                listState.animateScrollToItem(chats.lastIndex, additionalScrollY.toInt())
+                listState.scrollToItem(chats.lastIndex, additionalScrollY.toInt())
             }
         }
     }
@@ -111,7 +112,6 @@ fun ChatSection() {
             override fun onChatSubmitResponseStarted() {
                 speechOutputManager.reset()
                 hasManuallyInterfered = false
-                // scrollToEnd()
             }
 
             override fun onChatSubmitResponsePartial(value: String) {
@@ -172,12 +172,15 @@ fun ChatSection() {
                 .pointerInput("tap_input") {
                     detectTapGestures(
                         onPress = { preventAutoScroll() },
-                        onTap = { preventAutoScroll() }
+                        onTap = { preventAutoScroll() },
+                        onLongPress = { preventAutoScroll() },
+                        onDoubleTap = { preventAutoScroll() }
                     )
                 }
                 .pointerInput("drag_input") {
                     detectDragGestures(
-                        onDrag = { _, _ -> preventAutoScroll() }
+                        onDrag = { _, _ -> preventAutoScroll() },
+                        onDragStart = { preventAutoScroll() },
                     )
                 },
             state = listState

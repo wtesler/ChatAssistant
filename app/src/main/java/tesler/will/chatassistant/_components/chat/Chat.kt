@@ -2,20 +2,22 @@ package tesler.will.chatassistant._components.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.chat.ChatModel
-import tesler.will.chatassistant.chat.ChatModel.State.*
+import tesler.will.chatassistant.chat.ChatModel.State.CREATED
+import tesler.will.chatassistant.chat.ChatModel.State.ERROR
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
 fun Chat(modifier: Modifier, chatModel: ChatModel) {
-    var backgroundColor = MaterialTheme.colors.background;
+    var backgroundColor = MaterialTheme.colors.background
     if (chatModel.state == ERROR) {
         backgroundColor = MaterialTheme.colors.error
     } else if (chatModel.state == CREATED) {
@@ -38,13 +40,14 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
                 .padding(hPadding, vPadding),
             contentAlignment = Center
         ) {
-            Text(
-                modifier = Modifier
-                    .wrapContentWidth(),
-                text = chatModel.text,
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.onSurface
-            )
+            SelectionContainer(modifier = Modifier.wrapContentWidth()) {
+                MarkdownText(
+                    modifier = Modifier.wrapContentWidth(),
+                    markdown = chatModel.text,
+                    color = MaterialTheme.colors.onSurface,
+                    style = MaterialTheme.typography.body1
+                )
+            }
         }
     }
 }
