@@ -3,9 +3,11 @@ package tesler.will.chatassistant.speechoutput
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
+import android.speech.tts.Voice
 import android.util.Log
 import android.widget.Toast
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.Listener
+import tesler.will.chatassistant.store.SettingsService
 import java.util.*
 
 
@@ -16,15 +18,21 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     private var hasInit = false
     private var queuedSpeech = ""
     private var isMute = false
+    private var voiceString: String? = null
 
     private val listeners = mutableListOf<Listener>()
 
-    override fun init() {
+    override fun init(voice: String?) {
+        voiceString = voice
         if (tts == null) {
             tts = TextToSpeech(context, this)
         } else {
             Log.w("Speech Output", "TTS already started")
         }
+    }
+
+    override fun isInit(): Boolean {
+        return hasInit
     }
 
     override fun reset() {
@@ -36,6 +44,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         pendingText = null
         hasInit = false
         queuedSpeech = ""
+        voiceString = null
     }
 
     override fun stop() {
@@ -46,6 +55,9 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
 
     override fun addListener(listener: Listener) {
         listeners.add(listener)
+        if (hasInit) {
+            listener.onTtsReady()
+        }
     }
 
     override fun removeListener(listener: Listener) {
@@ -94,12 +106,40 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         }
     }
 
+    override fun getDefaultVoice(): Voice {
+        if (tts == null) {
+            throw Exception("Must call init before getting default voice.")
+        }
+        return tts!!.defaultVoice
+    }
+
+    override fun getVoices(): MutableSet<Voice> {
+        if (tts == null) {
+            throw Exception("Must call init before getting voices.")
+        }
+        return tts!!.voices
+    }
+
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             hasInit = true
+
+            if (voiceString != null) {
+                val voices = getVoices()
+                for (voice in voices) {
+                    if (voice.name == voiceString) {
+                        tts!!.voice = voice
+                        break
+                    }
+                }
+            }
+
             if (pendingText != null) {
                 speakInternal(pendingText)
                 pendingText = null
+            }
+            for (listener in listeners) {
+                listener.onTtsReady()
             }
         } else {
             Toast.makeText(context, "Failed to start text-to-speech", Toast.LENGTH_LONG).show()

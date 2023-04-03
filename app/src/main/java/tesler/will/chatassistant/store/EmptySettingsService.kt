@@ -9,9 +9,12 @@ class EmptySettingsService : ISettingsService {
     }
 
     override suspend fun currentSettings(): Settings {
-        return Settings(false)
+        return Settings(false, "")
     }
 
     override suspend fun updateIsMute(isMute: Boolean) {
+    }
+
+    override suspend fun updateVoice(voice: String) {
     }
 }

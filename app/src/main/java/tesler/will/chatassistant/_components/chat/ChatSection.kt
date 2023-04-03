@@ -1,6 +1,5 @@
 package tesler.will.chatassistant._components.chat
 
-import android.util.Log
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -30,12 +29,14 @@ import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
+import tesler.will.chatassistant.store.ISettingsService
 
 @Composable
 fun ChatSection() {
     val chatManager = koinInject<IChatManager>()
     val speechInputManager = koinInject<ISpeechInputManager>()
     val speechOutputManager = koinInject<ISpeechOutputManager>()
+    val settingsService = koinInject<ISettingsService>()
 
     val chats = remember { mutableStateListOf<ChatModel>() }
     var height by remember { mutableStateOf(0) }
@@ -146,7 +147,15 @@ fun ChatSection() {
     DisposableEffect(Unit) {
         chatManager.addListener(chatListener)
         speechInputManager.addListener(speechInputListener)
-        speechOutputManager.init()
+
+        coroutineScope.launch {
+            settingsService.observeSettings().collect { settings ->
+                if (!speechOutputManager.isInit()) {
+                    val voice = settings.voice
+                    speechOutputManager.init(voice)
+                }
+            }
+        }
 
         for (chat in chatManager.getChats()) {
             chats.add(chat)

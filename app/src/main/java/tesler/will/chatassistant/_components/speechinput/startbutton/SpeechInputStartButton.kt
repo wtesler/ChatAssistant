@@ -26,7 +26,7 @@ fun SpeechInputStartButton(onClick: () -> Unit) {
                 indication = rememberRipple(bounded = false),
                 onClick = onClick
             )
-            .padding(0.dp, 25.dp),
+            .padding(0.dp, 27.dp),
         painter = painterResource(id = R.drawable.microphone),
         contentDescription = "Speech Start Button",
         colorFilter = tint(MaterialTheme.colors.onSurface)

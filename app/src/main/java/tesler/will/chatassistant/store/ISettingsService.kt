@@ -7,4 +7,5 @@ interface ISettingsService {
     suspend fun currentSettings(): Settings
 
     suspend fun updateIsMute(isMute: Boolean)
+    suspend fun updateVoice(voice: String)
 }

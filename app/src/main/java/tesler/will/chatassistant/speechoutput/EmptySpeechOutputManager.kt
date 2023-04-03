@@ -1,7 +1,14 @@
 package tesler.will.chatassistant.speechoutput
 
+import android.speech.tts.Voice
+import java.util.Locale
+
 class EmptySpeechOutputManager : ISpeechOutputManager {
-    override fun init() {
+    override fun init(voice: String?) {
+    }
+
+    override fun isInit(): Boolean {
+        return false
     }
 
     override fun reset() {
@@ -26,6 +33,13 @@ class EmptySpeechOutputManager : ISpeechOutputManager {
     }
 
     override fun setMuted(isMuted: Boolean) {
-        TODO("Not yet implemented")
+    }
+
+    override fun getDefaultVoice(): Voice {
+        return Voice("Test", Locale.getDefault(), 500, 500, false, mutableSetOf())
+    }
+
+    override fun getVoices(): MutableSet<Voice> {
+        return mutableSetOf()
     }
 }

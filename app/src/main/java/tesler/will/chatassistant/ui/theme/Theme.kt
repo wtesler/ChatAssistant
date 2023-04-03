@@ -23,12 +23,12 @@ private val LightColorPalette = lightColors(
 )
 
 private val DarkColorPalette = darkColors(
-    primary = OffBlack,
-    primaryVariant = Gray,
+    primary = DarkBlue,
+    primaryVariant = GrayBlue,
     secondary = NearBlack,
     secondaryVariant = NearGray,
     background = Transparent,
-    surface = OffBlack,
+    surface = DarkBlue,
     error = DarkRed,
     onPrimary = OffWhite,
     onSecondary = OffWhite,

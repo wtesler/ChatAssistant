@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.modules.main.mainTestModule
+import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
 fun SettingsButton(
@@ -28,9 +29,10 @@ fun SettingsButton(
     onIconClick: () -> Unit,
     onSettingsDismiss: () -> Unit
 ) {
-    Box(modifier = modifier.height(26.dp)) {
+    Box(modifier = modifier.size(MaterialTheme.spacing.icon_normal)) {
         Image(
             modifier = Modifier
+                .fillMaxSize()
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(bounded = false),
@@ -38,9 +40,9 @@ fun SettingsButton(
                 )
                 .padding(0.dp, 0.dp)
                 .align(Center),
-            painter = painterResource(id = R.drawable.settings),
+            painter = painterResource(id = R.drawable.ic_launcher_round),
             contentDescription = "Settings Button",
-            colorFilter = tint(MaterialTheme.colors.secondaryVariant)
+//            colorFilter = tint(MaterialTheme.colors.secondaryVariant)
         )
 
         DropdownMenu(

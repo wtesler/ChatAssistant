@@ -9,11 +9,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.chat.ElevationShadow
 import tesler.will.chatassistant._components.preview.Previews
+import tesler.will.chatassistant._components.speechinput.appicon.AppIconButton
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
 import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
@@ -139,7 +141,7 @@ fun SpeechInputSection(initialState: State = State.ACTIVE, initialText: String =
             if (state == State.ACTIVE || state == State.WAITING) {
                 if (text.isNotBlank()) {
                     val hPadding = MaterialTheme.spacing.large
-                    val topPadding = MaterialTheme.spacing.xxlarge
+                    val topPadding = 50.dp
                     val bottomPadding = MaterialTheme.spacing.small
 
                     Box(

@@ -14,3 +14,6 @@ val NearGray = Color(0xFF303030)
 val Transparent = Color(0x00000000)
 val DarkRed = Color(0xFF220000)
 val LightRed = Color(0xFFFFE3E3)
+//
+val DarkBlue = Color(0xFF202125)
+val GrayBlue = Color(0xFF313236)

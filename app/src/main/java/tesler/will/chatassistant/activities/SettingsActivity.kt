@@ -7,18 +7,22 @@ import androidx.activity.compose.setContent
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import tesler.will.chatassistant.R
-import tesler.will.chatassistant._components.Main
+import tesler.will.chatassistant._components.settings.SettingsScreen
 import tesler.will.chatassistant.modules.main.mainModule
+import tesler.will.chatassistant.modules.settings.settingsModule
+import tesler.will.chatassistant.ui.theme.AppTheme
 
-class MainActivity : ComponentActivity() {
+class SettingsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loadKoinModules(mainModule)
+        loadKoinModules(settingsModule)
 
         setContent {
-            Main(this)
+            AppTheme {
+                SettingsScreen(this)
+            }
         }
 
         setTheme(R.style.Theme_ChatAssistant)
@@ -34,15 +38,6 @@ class MainActivity : ComponentActivity() {
     override fun finishAndRemoveTask() {
         unloadKoinModules(mainModule)
         super.finishAndRemoveTask()
-    }
-
-    override fun onStop() {
-        unloadKoinModules(mainModule)
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")

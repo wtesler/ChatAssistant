@@ -1,6 +1,7 @@
 package tesler.will.chatassistant._components.speechinput.settingsbutton
 
-import android.widget.Toast
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -8,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
+import tesler.will.chatassistant.activities.SettingsActivity
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 import tesler.will.chatassistant.store.ISettingsService
@@ -46,8 +48,11 @@ fun SettingsButtonResolver(modifier: Modifier) {
     }
 
     val onSettingsClick = {
-        Toast.makeText(context, "Coming Soon", Toast.LENGTH_LONG).show()
         isExpanded = false
+        val intent = Intent(context, SettingsActivity::class.java)
+        val activity: Activity = context as Activity
+        activity.finish()
+        context.startActivity(intent)
     }
 
     val onIconClick = {

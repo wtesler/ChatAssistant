@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant._components.chat.ChatSection
 import tesler.will.chatassistant._components.preview.Previews
@@ -46,6 +47,7 @@ fun Card(defaultVisible: Boolean = false) {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .widthIn(Dp.Unspecified, 500.dp)
                 .padding(0.dp, MaterialTheme.spacing.medium)
                 .border(BorderStroke(0.dp, Color.Black), shape)
                 .clip(shape)

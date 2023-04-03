@@ -1,7 +1,10 @@
 package tesler.will.chatassistant.speechoutput
 
+import android.speech.tts.Voice
+
 interface ISpeechOutputManager {
-    fun init()
+    fun init(voice: String?)
+    fun isInit(): Boolean
     fun reset()
     fun destroy()
     fun stop()
@@ -10,8 +13,11 @@ interface ISpeechOutputManager {
     fun queueSpeech(text: String)
     fun flushSpeech()
     fun setMuted(isMuted: Boolean)
+    fun getDefaultVoice(): Voice
+    fun getVoices(): MutableSet<Voice>
 
     interface Listener {
+        fun onTtsReady() = run { }
         fun onSpeechProgress(progress: Float) = run { }
     }
 }
