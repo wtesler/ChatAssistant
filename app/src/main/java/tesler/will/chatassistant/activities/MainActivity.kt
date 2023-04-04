@@ -27,22 +27,17 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun finish() {
-        unloadKoinModules(mainModule)
+        unload()
         super.finish()
     }
 
     override fun finishAndRemoveTask() {
-        unloadKoinModules(mainModule)
+        unload()
         super.finishAndRemoveTask()
     }
 
-    override fun onStop() {
+    private fun unload() {
         unloadKoinModules(mainModule)
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")

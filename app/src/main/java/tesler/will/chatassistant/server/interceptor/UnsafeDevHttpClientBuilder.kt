@@ -5,7 +5,6 @@ import okhttp3.OkHttpClient
 import java.security.SecureRandom
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
-import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
 
 /**
@@ -13,7 +12,7 @@ import javax.net.ssl.*
  */
 class UnsafeDevHttpClientBuilder {
     companion object {
-        fun build(): OkHttpClient {
+        fun builder(): OkHttpClient.Builder {
             val trustAllCerts: Array<TrustManager> = arrayOf(
                 @SuppressLint("CustomX509TrustManager")
                 object : X509TrustManager {
@@ -48,10 +47,6 @@ class UnsafeDevHttpClientBuilder {
             builder.hostnameVerifier { _, _ -> true }
 
             return builder
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .addInterceptor(ServerInterceptor())
-                .build()
         }
     }
 }

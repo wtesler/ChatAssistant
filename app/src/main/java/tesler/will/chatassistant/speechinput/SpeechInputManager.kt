@@ -54,7 +54,8 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
 
     override fun start() {
         if (speechRecognizer == null) {
-            throw Exception("Must call init before starting.")
+            Toast.makeText(context, "Speech recognition unavailable.", Toast.LENGTH_LONG).show()
+            return
         }
 
         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -68,7 +69,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, RecognizerIntent.FORMATTING_OPTIMIZE_LATENCY)
+                // putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, RecognizerIntent.FORMATTING_OPTIMIZE_LATENCY)
                 // putExtra(RecognizerIntent.EXTRA_HIDE_PARTIAL_TRAILING_PUNCTUATION, true)
             }
         }

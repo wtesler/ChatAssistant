@@ -15,30 +15,26 @@ import java.util.concurrent.TimeUnit
 
 val serverModule = module {
     factory { provideApiService(get()) }
-    single { provideRetrofit(get(), androidContext()) }
-    factory { provideOkHttpClient() }
+    single { provideRetrofit(androidContext()) }
 }
 
 fun provideApiService(retrofit: Retrofit): ApiService {
     return retrofit.create(ApiService::class.java)
 }
 
-fun provideOkHttpClient(): OkHttpClient {
-    return OkHttpClient().newBuilder()
-        .addInterceptor(ServerInterceptor())
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .build()
-}
-
-fun provideRetrofit(okHttpClient: OkHttpClient, context: Context): Retrofit {
-    var httpClient = okHttpClient
+fun provideRetrofit(context: Context): Retrofit {
     var baseUrl = context.getString(R.string.production_server_url)
-
+    var builder = OkHttpClient().newBuilder()
     if (BuildConfig.DEBUG) {
         baseUrl = context.getString(R.string.development_server_url)
-        httpClient = UnsafeDevHttpClientBuilder.build()
+        builder = UnsafeDevHttpClientBuilder.builder()
     }
+
+    val httpClient = builder
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .addInterceptor(ServerInterceptor())
+        .build()
 
     return Retrofit.Builder()
         .baseUrl(baseUrl)

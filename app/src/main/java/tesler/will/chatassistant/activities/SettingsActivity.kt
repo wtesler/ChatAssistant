@@ -9,6 +9,7 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.settings.SettingsScreen
+import tesler.will.chatassistant.modules.main.mainModule
 import tesler.will.chatassistant.modules.settings.settingsModule
 import tesler.will.chatassistant.ui.theme.AppTheme
 
@@ -31,13 +32,17 @@ class SettingsActivity : ComponentActivity() {
     }
 
     override fun finish() {
-        unloadKoinModules(settingsModule)
+        unload()
         super.finish()
     }
 
     override fun finishAndRemoveTask() {
-        unloadKoinModules(settingsModule)
+        unload()
         super.finishAndRemoveTask()
+    }
+
+    private fun unload() {
+        unloadKoinModules(settingsModule)
     }
 
     @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")

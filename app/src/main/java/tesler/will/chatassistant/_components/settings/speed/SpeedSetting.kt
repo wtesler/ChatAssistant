@@ -26,11 +26,11 @@ fun SpeedSetting() {
         options.add(SpeedOption(.6f))
         options.add(SpeedOption(.8f))
         options.add(SpeedOption(1f))
-        options.add(SpeedOption(1.1f))
         options.add(SpeedOption(1.2f))
-        options.add(SpeedOption(1.3f))
         options.add(SpeedOption(1.4f))
-        options.add(SpeedOption(2.0f))
+        options.add(SpeedOption(1.6f))
+        options.add(SpeedOption(1.8f))
+        options.add(SpeedOption(2.2f))
 
         coroutineScope.launch {
             settingsService.observeSettings().collect { settings ->

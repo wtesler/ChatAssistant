@@ -24,6 +24,7 @@ class ServerInterceptor : Interceptor {
                         .build()
                 }
             } catch (_: Exception) {
+                // Intentionally Empty
             }
         }
 
