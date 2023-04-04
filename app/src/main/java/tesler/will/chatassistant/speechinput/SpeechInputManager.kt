@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.speech.RecognizerIntent
+import android.speech.RecognizerIntent.FORMATTING_OPTIMIZE_LATENCY
 import android.speech.RecognizerIntent.FORMATTING_OPTIMIZE_QUALITY
 import android.speech.SpeechRecognizer
 import android.widget.Toast
@@ -69,7 +70,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, FORMATTING_OPTIMIZE_QUALITY)
+                // putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, FORMATTING_OPTIMIZE_LATENCY)
                 putExtra(RecognizerIntent.EXTRA_HIDE_PARTIAL_TRAILING_PUNCTUATION, true)
             }
         }
