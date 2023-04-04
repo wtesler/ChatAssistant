@@ -2,9 +2,7 @@ package tesler.will.chatassistant.chat
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.HttpException
@@ -13,6 +11,7 @@ import tesler.will.chatassistant.chat.ChatModel.State.ERROR
 import tesler.will.chatassistant.chat.IChatManager.Listener
 import tesler.will.chatassistant.server.ApiService
 import tesler.will.chatassistant.server.models.chat.ChatUpdateRequest
+import java.net.SocketTimeoutException
 
 class ChatManager(private val apiService: ApiService) : IChatManager {
     private var chats: ArrayList<ChatModel> = ArrayList()
@@ -102,7 +101,7 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
             var hasUpdatedInputChat = false
             addChat(inputChat)
 
-            var responseChat = ChatModel("", CREATED, false)
+            val responseChat = ChatModel("", CREATED, false)
             addChat(responseChat)
 
             var message = ""
@@ -110,6 +109,7 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
             try {
                 apiService.updateChat(ChatUpdateRequest.build(chatsCopy))
                     .stream()
+                    .catch { cause ->  throw cause}
                     .collect { string ->
                         responseChat.text += string
                         updateChat(responseChat)
@@ -132,6 +132,13 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
                 isSuccess = true
             } catch (e: HttpException) {
                 message = "${e.code()}: ${e.message()}"
+                isSuccess = false
+                removeChat(inputChatId)
+                responseChat.text = message
+                responseChat.state = ERROR
+                updateChat(responseChat)
+            } catch (e: SocketTimeoutException) {
+                message = "Error Timeout."
                 isSuccess = false
                 removeChat(inputChatId)
                 responseChat.text = message

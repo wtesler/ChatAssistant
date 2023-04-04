@@ -17,3 +17,4 @@ val LightRed = Color(0xFFFFE3E3)
 //
 val DarkBlue = Color(0xFF202125)
 val GrayBlue = Color(0xFF313236)
+val NightBlue = Color(0xFF191A1D)

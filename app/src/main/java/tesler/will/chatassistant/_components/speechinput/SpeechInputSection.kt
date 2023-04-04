@@ -9,13 +9,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.chat.ElevationShadow
 import tesler.will.chatassistant._components.preview.Previews
-import tesler.will.chatassistant._components.speechinput.appicon.AppIconButton
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
 import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
@@ -69,12 +67,9 @@ fun SpeechInputSection(initialState: State = State.ACTIVE, initialText: String =
                 chatManager.addChat(chat)
             }
 
-            override fun onSpeechFinished(value: String?) {
+            override fun onSpeechFinished() {
                 if (state != State.WAITING) {
                     state = State.WAITING
-                    if (value != null) {
-                        chat.text = value
-                    }
                     val chatToSubmit = chat.copy(state = ChatModel.State.CREATED)
                     chatManager.submitChat(chatToSubmit, scope)
                 }

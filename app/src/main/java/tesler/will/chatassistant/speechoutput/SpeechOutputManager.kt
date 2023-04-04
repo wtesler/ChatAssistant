@@ -7,7 +7,6 @@ import android.speech.tts.Voice
 import android.util.Log
 import android.widget.Toast
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.Listener
-import tesler.will.chatassistant.store.SettingsService
 import java.util.*
 
 
@@ -19,11 +18,13 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     private var queuedSpeech = ""
     private var isMute = false
     private var voiceString: String? = null
+    private var speedFloat: Float? = null
 
     private val listeners = mutableListOf<Listener>()
 
-    override fun init(voice: String?) {
+    override fun init(voice: String?, speed: Float?) {
         voiceString = voice
+        speedFloat = speed
         if (tts == null) {
             tts = TextToSpeech(context, this)
         } else {
@@ -45,6 +46,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         hasInit = false
         queuedSpeech = ""
         voiceString = null
+        speedFloat = null
     }
 
     override fun stop() {
@@ -132,6 +134,10 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
                         break
                     }
                 }
+            }
+
+            if (speedFloat != null) {
+                tts!!.setSpeechRate(speedFloat!!)
             }
 
             if (pendingText != null) {

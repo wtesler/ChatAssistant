@@ -48,7 +48,7 @@ fun SettingsButton(
         DropdownMenu(
             modifier = Modifier
                 .align(Center)
-                .background(MaterialTheme.colors.primaryVariant),
+                .background(MaterialTheme.colors.secondaryVariant),
             expanded = model.isExpanded,
             offset = DpOffset(0.dp, 10.dp),
             onDismissRequest = onSettingsDismiss

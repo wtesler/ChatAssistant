@@ -12,7 +12,7 @@ interface ISpeechInputManager {
     interface Listener {
         fun onListeningStarted() = run { }
         fun onSpeechStarted() = run { }
-        fun onSpeechFinished(value: String?) = run { }
+        fun onSpeechFinished() = run { }
         fun onText(value: String?) = run { }
         fun onAmplitude(value: Float?) = run { }
         fun onError(statusCode: Int?) = run { }

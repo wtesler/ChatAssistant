@@ -6,13 +6,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
+import tesler.will.chatassistant._components.settings.SettingsOption
 import tesler.will.chatassistant._components.settings.SettingsRow
 import tesler.will.chatassistant.modules.settings.settingsTestModule
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 import tesler.will.chatassistant.store.ISettingsService
 import java.util.*
 
-data class VoiceOption(val name: String, var displayName: String)
+data class VoiceOption(val name: String, val display: String) : SettingsOption(display)
 
 @Composable
 fun VoiceSetting() {
@@ -65,7 +66,8 @@ fun VoiceSetting() {
                         }
                     }
                     if (duplicates > 0) {
-                        val copy = option.copy(displayName = "${option.displayName} (${duplicates + 1})")
+                        val copy =
+                            option.copy(display = "${option.displayName} (${duplicates + 1})")
                         options.add(copy)
                     } else {
                         options.add(option)
@@ -108,7 +110,7 @@ fun VoiceSetting() {
 
 @Preview
 @Composable
-private fun SettingsRowPreview() {
+private fun VoiceSettingPreview() {
     Previews.Wrap(settingsTestModule, false) {
         VoiceSetting()
     }

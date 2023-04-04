@@ -16,6 +16,7 @@ class SettingsService(private val context: Context) : ISettingsService {
     private object Keys {
         val IS_MUTE = booleanPreferencesKey("is_mute")
         val VOICE = stringPreferencesKey("voice")
+        val SPEED = floatPreferencesKey("speed")
     }
 
     companion object {
@@ -25,7 +26,8 @@ class SettingsService(private val context: Context) : ISettingsService {
     private fun mapSettings(preferences: Preferences): Settings {
         val isMute = preferences[Keys.IS_MUTE] ?: false
         val voice = preferences[Keys.VOICE]
-        return Settings(isMute, voice)
+        val speed = preferences[Keys.SPEED]
+        return Settings(isMute, voice, speed)
     }
 
     override fun observeSettings(): Flow<Settings> = context.dataStore.data
@@ -53,6 +55,12 @@ class SettingsService(private val context: Context) : ISettingsService {
     override suspend fun updateVoice(voice: String) {
         context.dataStore.edit { preferences ->
             preferences[Keys.VOICE] = voice
+        }
+    }
+
+    override suspend fun updateSpeed(speed: Float) {
+        context.dataStore.edit { preferences ->
+            preferences[Keys.SPEED] = speed
         }
     }
 }

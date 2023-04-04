@@ -152,7 +152,8 @@ fun ChatSection() {
             settingsService.observeSettings().collect { settings ->
                 if (!speechOutputManager.isInit()) {
                     val voice = settings.voice
-                    speechOutputManager.init(voice)
+                    val speed = settings.speed
+                    speechOutputManager.init(voice, speed)
                 }
             }
         }

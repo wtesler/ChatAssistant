@@ -3,7 +3,7 @@ package tesler.will.chatassistant.speechoutput
 import android.speech.tts.Voice
 
 interface ISpeechOutputManager {
-    fun init(voice: String?)
+    fun init(voice: String?, speed: Float?)
     fun isInit(): Boolean
     fun reset()
     fun destroy()

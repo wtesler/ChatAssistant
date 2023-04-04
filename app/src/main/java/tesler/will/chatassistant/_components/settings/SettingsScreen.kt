@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
+import tesler.will.chatassistant._components.settings.speed.SpeedSetting
 import tesler.will.chatassistant._components.settings.voice.VoiceSetting
 import tesler.will.chatassistant.modules.settings.settingsTestModule
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
@@ -19,7 +20,7 @@ fun SettingsScreen(activity: Activity?) {
     val speechOutputManager = koinInject<ISpeechOutputManager>()
 
     DisposableEffect(Unit) {
-        speechOutputManager.init(null)
+        speechOutputManager.init(null, null)
 
         onDispose {
             speechOutputManager.destroy()
@@ -32,6 +33,7 @@ fun SettingsScreen(activity: Activity?) {
             .background(MaterialTheme.colors.surface)
     ) {
         VoiceSetting()
+        SpeedSetting()
     }
 }
 

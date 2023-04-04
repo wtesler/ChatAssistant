@@ -4,7 +4,7 @@ import android.speech.tts.Voice
 import java.util.Locale
 
 class EmptySpeechOutputManager : ISpeechOutputManager {
-    override fun init(voice: String?) {
+    override fun init(voice: String?, speed: Float?) {
     }
 
     override fun isInit(): Boolean {

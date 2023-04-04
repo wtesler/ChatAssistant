@@ -8,4 +8,5 @@ interface ISettingsService {
 
     suspend fun updateIsMute(isMute: Boolean)
     suspend fun updateVoice(voice: String)
+    suspend fun updateSpeed(speed: Float)
 }

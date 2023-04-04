@@ -4,11 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.speech.RecognizerIntent
-import android.speech.RecognizerIntent.FORMATTING_OPTIMIZE_LATENCY
-import android.speech.RecognizerIntent.FORMATTING_OPTIMIZE_QUALITY
 import android.speech.SpeechRecognizer
 import android.widget.Toast
-import tesler.will.chatassistant.speechinput.ISpeechInputManager.*
+import tesler.will.chatassistant.speechinput.ISpeechInputManager.Listener
 import tesler.will.chatassistant.speechinput.listener.SpeechListener
 
 class SpeechInputManager(private val context: Context) : ISpeechInputManager {
@@ -70,8 +68,8 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                // putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, FORMATTING_OPTIMIZE_LATENCY)
-                putExtra(RecognizerIntent.EXTRA_HIDE_PARTIAL_TRAILING_PUNCTUATION, true)
+                putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, RecognizerIntent.FORMATTING_OPTIMIZE_LATENCY)
+                // putExtra(RecognizerIntent.EXTRA_HIDE_PARTIAL_TRAILING_PUNCTUATION, true)
             }
         }
 
@@ -102,7 +100,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
             listener.onAmplitude(amplitude)
         }
         if (isFinished != null && text != null) {
-            listener.onSpeechFinished(text)
+            listener.onSpeechFinished()
         }
         if (errorCode != null) {
             listener.onError(errorCode)
@@ -127,7 +125,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
     private fun onFinished() {
         isFinished = true
         for (listener in listeners) {
-            listener.onSpeechFinished(text)
+            listener.onSpeechFinished()
         }
     }
 

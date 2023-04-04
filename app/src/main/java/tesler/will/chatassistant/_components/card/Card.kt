@@ -30,7 +30,7 @@ fun Card(defaultVisible: Boolean = false) {
 
     var visible by remember { mutableStateOf(defaultVisible) }
 
-    val shape = RoundedCornerShape(MaterialTheme.spacing.large, MaterialTheme.spacing.large, 0.dp, 0.dp)
+    val shape = RoundedCornerShape(MaterialTheme.spacing.large)
 
     LaunchedEffect(Unit) {
         visible = true

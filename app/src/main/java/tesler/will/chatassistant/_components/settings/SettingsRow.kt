@@ -27,11 +27,11 @@ import tesler.will.chatassistant.modules.settings.settingsTestModule
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
-fun SettingsRow(
+fun <T : SettingsOption> SettingsRow(
     title: String,
-    options: List<VoiceOption>,
-    selected: VoiceOption,
-    onOptionSelect: (VoiceOption) -> Unit
+    options: List<T>,
+    selected: T,
+    onOptionSelect: (T) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -77,7 +77,9 @@ fun SettingsRow(
             )
 
             DropdownMenu(
-                modifier = Modifier.fillMaxWidth(.653f),
+                modifier = Modifier
+                    .fillMaxWidth(.653f)
+                    .background(MaterialTheme.colors.secondaryVariant),
                 expanded = isExpanded,
                 onDismissRequest = { isExpanded = false },
                 offset = DpOffset(0.dp, 5.dp)
@@ -110,6 +112,11 @@ fun SettingsRow(
 @Composable
 private fun SettingsRowPreview() {
     Previews.Wrap(settingsTestModule, false) {
-        SettingsRow("Voice:", listOf(VoiceOption("name", "displayName")), VoiceOption("", "")) {}
+        SettingsRow(
+            "Voice:",
+            listOf(
+                VoiceOption("name1", "displayName1")
+            ), VoiceOption("defaultName", "defaultDisplayName")
+        ) {}
     }
 }
