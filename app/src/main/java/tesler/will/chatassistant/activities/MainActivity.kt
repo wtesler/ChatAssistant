@@ -26,9 +26,9 @@ class MainActivity : ComponentActivity() {
         window.setLayout(MATCH_PARENT, MATCH_PARENT)
     }
 
-    override fun onStop() {
+    override fun onPause() {
+        super.onPause()
         finishAndRemoveTask()
-        super.onStop()
     }
 
     override fun finish() {
