@@ -82,6 +82,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
     }
 
     override fun stop() {
+        speechRecognizer?.cancel()
         isStarted = null
         isFinished = null
         text = null

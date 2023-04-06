@@ -26,7 +26,7 @@ fun SpeechSubmitButton(onClick: () -> Unit) {
                 indication = rememberRipple(bounded = false),
                 onClick = onClick
             )
-            .padding(0.dp, 27.dp),
+            .padding(0.dp, 30.dp),
         painter = painterResource(id = R.drawable.submit),
         contentDescription = "Submit Button",
         colorFilter = tint(MaterialTheme.colors.onSurface)

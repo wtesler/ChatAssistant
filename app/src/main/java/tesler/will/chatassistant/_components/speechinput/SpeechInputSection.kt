@@ -4,14 +4,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.shadow.ElevationShadow
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
+import tesler.will.chatassistant._components.speechinput.keyboardbutton.KeyboardButton
 import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
 import tesler.will.chatassistant._components.speechinput.submitbutton.SpeechSubmitButton
@@ -22,7 +26,10 @@ import tesler.will.chatassistant.ui.theme.spacing
 fun SpeechInputSection(
     viewModel: SpeechInputSectionViewModel,
     onStartClicked: () -> Unit,
-    onSubmitClicked: () -> Unit
+    onSubmitClicked: () -> Unit,
+    onKeyboardClicked: () -> Unit,
+    onTextChanged: (text: String) -> Unit,
+    focusRequester: FocusRequester
 ) {
     val state = viewModel.state
     val text = viewModel.text
@@ -43,15 +50,31 @@ fun SpeechInputSection(
                 ElevationShadow()
             }
 
-            if (text.isNotBlank()) {
-                val hPadding = MaterialTheme.spacing.large
-                val bottomPadding = MaterialTheme.spacing.small
+            val hPadding = MaterialTheme.spacing.large
+            val bottomPadding = MaterialTheme.spacing.small
 
+            if (state == State.TEXT_INPUT) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(hPadding, 50.dp, hPadding, bottomPadding),
+                        .padding(hPadding, 70.dp, hPadding, bottomPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                        value = text,
+                        onValueChange = onTextChanged
+                    )
+                }
+            } else if (text.isNotBlank()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(hPadding, 55.dp, hPadding, bottomPadding),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -64,7 +87,7 @@ fun SpeechInputSection(
             }
 
             Box(
-                modifier = Modifier.height(90.dp), contentAlignment = Alignment.Center
+                modifier = Modifier.height(100.dp), contentAlignment = Alignment.Center
             ) {
                 when (state) {
                     State.ACTIVE -> SpeechInputIndicator()
@@ -86,6 +109,18 @@ fun SpeechInputSection(
         ) {
             SettingsButtonResolver(modifier = Modifier)
         }
+
+        if (viewModel.state != State.LOADING) {
+            Box(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.BottomEnd)
+                    .padding(MaterialTheme.spacing.medium)
+            ) {
+                KeyboardButton(modifier = Modifier, onKeyboardClicked)
+            }
+        }
     }
 }
 
@@ -96,6 +131,10 @@ private fun SpeechInputSectionPreview() {
         SpeechInputSection(
             SpeechInputSectionViewModel(State.TEXT_INPUT, "Hi, how can I help?"),
             {},
-            {})
+            {},
+            {},
+            {},
+            FocusRequester()
+        )
     }
 }
