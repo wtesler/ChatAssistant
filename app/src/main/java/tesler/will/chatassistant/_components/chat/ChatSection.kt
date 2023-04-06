@@ -24,6 +24,7 @@ import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
+import tesler.will.chatassistant._components.shadow.OverflowShadow
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.modules.main.mainTestModule
@@ -59,6 +60,7 @@ fun ChatSection() {
     val scrollToEnd = {
         coroutineScope.launch {
             awaitFrame()
+            awaitFrame()
             if (!hasManuallyInterfered) {
                 listState.scrollBy(height.toFloat() + 1)
             }
@@ -67,6 +69,7 @@ fun ChatSection() {
 
     val scrollToLastItem = { additionalScrollY: Float ->
         coroutineScope.launch {
+            awaitFrame()
             awaitFrame()
             if (!hasManuallyInterfered) {
                 listState.scrollToItem(chats.lastIndex, additionalScrollY.toInt())

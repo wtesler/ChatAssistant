@@ -1,4 +1,4 @@
-package tesler.will.chatassistant._components.chat
+package tesler.will.chatassistant._components.shadow
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer

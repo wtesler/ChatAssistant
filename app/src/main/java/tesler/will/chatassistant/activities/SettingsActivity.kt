@@ -31,6 +31,11 @@ class SettingsActivity : ComponentActivity() {
         window.setLayout(MATCH_PARENT, MATCH_PARENT)
     }
 
+    override fun onStop() {
+        finishAndRemoveTask()
+        super.onStop()
+    }
+
     override fun finish() {
         unload()
         super.finish()

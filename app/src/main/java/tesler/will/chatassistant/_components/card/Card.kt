@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant._components.chat.ChatSection
 import tesler.will.chatassistant._components.preview.Previews
-import tesler.will.chatassistant._components.speechinput.SpeechInputSection
+import tesler.will.chatassistant._components.speechinput.SpeechInputSectionResolver
 import tesler.will.chatassistant.modifiers.noRippleClickable
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.ui.theme.spacing
@@ -69,7 +69,7 @@ fun Card(defaultVisible: Boolean = false) {
                 Box(
                     modifier = Modifier
                 ) {
-                    SpeechInputSection()
+                    SpeechInputSectionResolver()
                 }
             }
         }
