@@ -14,13 +14,19 @@ import tesler.will.chatassistant._components.shadow.ElevationShadow
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
 import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
+import tesler.will.chatassistant._components.speechinput.submitbutton.SpeechSubmitButton
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.ui.theme.spacing
 
 @Composable
-fun SpeechInputSection(viewModel: SpeechInputSectionViewModel, onStartClicked: () -> Unit) {
+fun SpeechInputSection(
+    viewModel: SpeechInputSectionViewModel,
+    onStartClicked: () -> Unit,
+    onSubmitClicked: () -> Unit
+) {
     val state = viewModel.state
     val text = viewModel.text
+    val numChats = viewModel.numChats
 
     Box(
         modifier = Modifier
@@ -33,13 +39,11 @@ fun SpeechInputSection(viewModel: SpeechInputSectionViewModel, onStartClicked: (
                 .wrapContentWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (state == State.READY || (state == State.ACTIVE && text.isEmpty())) {
+            if (numChats > 0) {
                 ElevationShadow()
             }
 
-            if (text.isBlank()) {
-                ElevationShadow()
-            } else {
+            if (text.isNotBlank()) {
                 val hPadding = MaterialTheme.spacing.large
                 val bottomPadding = MaterialTheme.spacing.small
 
@@ -68,6 +72,7 @@ fun SpeechInputSection(viewModel: SpeechInputSectionViewModel, onStartClicked: (
                         color = MaterialTheme.colors.onSurface, strokeWidth = 5.dp
                     )
                     State.READY -> SpeechInputStartButton(onStartClicked)
+                    State.TEXT_INPUT -> SpeechSubmitButton(onSubmitClicked)
                 }
             }
         }
@@ -88,6 +93,9 @@ fun SpeechInputSection(viewModel: SpeechInputSectionViewModel, onStartClicked: (
 @Composable
 private fun SpeechInputSectionPreview() {
     Previews.Wrap(mainTestModule, true) {
-        SpeechInputSection(SpeechInputSectionViewModel(State.ACTIVE, "Hi, how can I help?")) {}
+        SpeechInputSection(
+            SpeechInputSectionViewModel(State.TEXT_INPUT, "Hi, how can I help?"),
+            {},
+            {})
     }
 }

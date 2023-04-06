@@ -7,6 +7,10 @@ class EmptyChatManager : IChatManager {
         return ArrayList()
     }
 
+    override fun numChats(): Int {
+        return 0
+    }
+
     override fun addChat(chatModel: ChatModel) {
     }
 

@@ -9,7 +9,6 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.settings.SettingsScreen
-import tesler.will.chatassistant.modules.main.mainModule
 import tesler.will.chatassistant.modules.settings.settingsModule
 import tesler.will.chatassistant.ui.theme.AppTheme
 
@@ -22,7 +21,7 @@ class SettingsActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                SettingsScreen(this)
+                SettingsScreen()
             }
         }
 

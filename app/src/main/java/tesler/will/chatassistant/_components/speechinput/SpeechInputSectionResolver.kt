@@ -17,7 +17,7 @@ fun SpeechInputSectionResolver() {
     val speechOutputManager = koinInject<ISpeechOutputManager>()
     val chatManager = koinInject<IChatManager>()
 
-    var viewModel by remember { mutableStateOf(SpeechInputSectionViewModel(State.ACTIVE, "")) }
+    var viewModel by remember { mutableStateOf(SpeechInputSectionViewModel()) }
     var chat by remember { mutableStateOf(ChatModel()) }
     val scope = rememberCoroutineScope()
 
@@ -29,8 +29,13 @@ fun SpeechInputSectionResolver() {
         viewModel = viewModel.copy(text = text)
     }
 
+    fun setNumChats(num: Int) {
+        viewModel = viewModel.copy(numChats = num)
+    }
+
     fun submitChat() {
         val chatToSubmit = chat.copy(state = ChatModel.State.CREATED)
+        chatManager.clearErrorChats()
         chatManager.submitChat(chatToSubmit, scope)
     }
 
@@ -48,16 +53,17 @@ fun SpeechInputSectionResolver() {
                 if (statusCode == null) {
                     return
                 }
+                chat.state = ChatModel.State.ERROR
                 if (statusCode == SpeechRecognizer.ERROR_NO_MATCH || statusCode == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
                     chat.text = "Did not receive any speech."
-                    chat.state = ChatModel.State.ERROR
-                    speechInputManager.stop()
-                    setState(State.READY)
-                    setText("")
+                } else if (statusCode == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS) {
+                    chat.text = "Enable Audio Permissions."
                 } else {
                     chat.text = "Error. Status code $statusCode."
                 }
-                setText(chat.text)
+                speechInputManager.stop()
+                setState(State.READY)
+                setText("")
                 chatManager.addChat(chat)
             }
 
@@ -79,6 +85,10 @@ fun SpeechInputSectionResolver() {
             override fun onChatSubmitResponse(isSuccess: Boolean, value: String?) {
                 setState(State.READY)
                 setText("")
+            }
+
+            override fun onNumChatsChanged(num: Int) {
+                setNumChats(num)
             }
         }
     }
@@ -114,7 +124,7 @@ fun SpeechInputSectionResolver() {
         }
     }
 
-    SpeechInputSection(viewModel, onStartClicked)
+    SpeechInputSection(viewModel, onStartClicked, ::submitChat)
 }
 
 @Preview

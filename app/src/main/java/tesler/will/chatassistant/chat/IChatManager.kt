@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 
 interface IChatManager {
     fun getChats(): ArrayList<ChatModel>
+    fun numChats(): Int
     fun addChat(chatModel: ChatModel)
     fun removeChat(chatId: String)
     fun updateChat(chatModel: ChatModel)
@@ -19,6 +20,7 @@ interface IChatManager {
         fun onChatUpdated(chatModel: ChatModel) = run { }
         fun onChatsCleared() = run { }
         fun onErrorChatsCleared() = run { }
+        fun onNumChatsChanged(num: Int) = run { }
         fun onChatSubmitResponseStarted() = run { }
         fun onChatSubmitResponsePartial(value: String) = run { }
         fun onChatSubmitResponse(isSuccess: Boolean, value: String?) = run { }

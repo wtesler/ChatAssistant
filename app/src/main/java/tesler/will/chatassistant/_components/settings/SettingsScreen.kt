@@ -17,7 +17,7 @@ import tesler.will.chatassistant.modules.settings.settingsTestModule
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 
 @Composable
-fun SettingsScreen(activity: Activity?) {
+fun SettingsScreen() {
     val speechOutputManager = koinInject<ISpeechOutputManager>()
 
     DisposableEffect(Unit) {
@@ -42,6 +42,6 @@ fun SettingsScreen(activity: Activity?) {
 @Composable
 private fun SettingsScreenPreview() {
     Previews.Wrap(settingsTestModule, false) {
-        SettingsScreen(null)
+        SettingsScreen()
     }
 }

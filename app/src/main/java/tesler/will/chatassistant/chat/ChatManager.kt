@@ -22,6 +22,10 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
         return chats
     }
 
+    override fun numChats(): Int {
+        return chats.size
+    }
+
     override fun addChat(chatModel: ChatModel) {
         for (chat in chats) {
             if (chat.id == chatModel.id) {
@@ -34,6 +38,7 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
         chats.add(chat)
         for (listener in listeners) {
             listener.onChatAdded(chat)
+            listener.onNumChatsChanged(chats.size)
         }
     }
 
@@ -42,6 +47,7 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
 
         for (listener in listeners) {
             listener.onChatRemoved(chatId)
+            listener.onNumChatsChanged(chats.size)
         }
     }
 
@@ -64,6 +70,7 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
         chats.clear()
         for (listener in listeners) {
             listener.onChatsCleared()
+            listener.onNumChatsChanged(chats.size)
         }
     }
 
@@ -72,6 +79,7 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
 
         for (listener in listeners) {
             listener.onErrorChatsCleared()
+            listener.onNumChatsChanged(chats.size)
         }
     }
 
