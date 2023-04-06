@@ -34,11 +34,13 @@ class MainActivity : ComponentActivity() {
     override fun finish() {
         unload()
         super.finish()
+        overridePendingTransition(0, 0)
     }
 
     override fun finishAndRemoveTask() {
         unload()
         super.finishAndRemoveTask()
+        overridePendingTransition(0, 0)
     }
 
     private fun unload() {
