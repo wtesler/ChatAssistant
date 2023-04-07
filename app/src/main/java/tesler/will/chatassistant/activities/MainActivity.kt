@@ -15,8 +15,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loadKoinModules(mainModule)
-
         setContent {
             Main(this)
         }
@@ -26,25 +24,19 @@ class MainActivity : ComponentActivity() {
         window.setLayout(MATCH_PARENT, MATCH_PARENT)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         finishAndRemoveTask()
     }
 
     override fun finish() {
-        unload()
         super.finish()
         overridePendingTransition(0, 0)
     }
 
     override fun finishAndRemoveTask() {
-        unload()
         super.finishAndRemoveTask()
         overridePendingTransition(0, 0)
-    }
-
-    private fun unload() {
-        unloadKoinModules(mainModule)
     }
 
     @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
