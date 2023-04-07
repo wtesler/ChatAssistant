@@ -1,9 +1,11 @@
 package tesler.will.chatassistant._components
 
 import android.app.Activity
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import tesler.will.chatassistant._components.background.Background
@@ -15,7 +17,7 @@ import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.ui.theme.AppTheme
 
 @Composable
-fun Main(activity: Activity?) {
+fun Main(activity: Activity) {
     AppTheme {
         PermissionWrapper(activity) {
             ContentWrapper(activity)
@@ -24,16 +26,31 @@ fun Main(activity: Activity?) {
 }
 
 @Composable
-private fun ContentWrapper(activity: Activity?) {
-    DisposableEffect(Unit) {
-        loadKoinModules(mainModule)
+private fun ContentWrapper(activity: Activity) {
+    var areModulesLoaded by remember { mutableStateOf(false) }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
+    LaunchedEffect(Unit) {
+        loadKoinModules(mainModule)
+        areModulesLoaded = true
+    }
+
+    DisposableEffect(Unit) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                unloadKoinModules(mainModule)
+                activity.finishAndRemoveTask()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            unloadKoinModules(mainModule)
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
-    Content(activity)
+    if (areModulesLoaded) {
+        Content(activity)
+    }
 }
 
 @Composable

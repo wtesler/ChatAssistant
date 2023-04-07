@@ -16,7 +16,7 @@ class SettingsActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                SettingsScreen()
+                SettingsScreen(this)
             }
         }
 
