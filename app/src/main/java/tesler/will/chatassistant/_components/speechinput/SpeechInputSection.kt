@@ -50,7 +50,7 @@ fun SpeechInputSection(
                 ElevationShadow()
             }
 
-            val hPadding = MaterialTheme.spacing.large
+            val hPadding = MaterialTheme.spacing.xlarge
             val bottomPadding = MaterialTheme.spacing.small
 
             if (state == State.TEXT_INPUT) {
@@ -58,7 +58,7 @@ fun SpeechInputSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(hPadding, 70.dp, hPadding, bottomPadding),
+                        .padding(hPadding, 70.dp, hPadding, 50.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     TextField(
@@ -66,7 +66,8 @@ fun SpeechInputSection(
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
                         value = text,
-                        onValueChange = onTextChanged
+                        onValueChange = onTextChanged,
+                        trailingIcon = { SpeechSubmitButton(onSubmitClicked) }
                     )
                 }
             } else if (text.isNotBlank()) {
@@ -86,16 +87,18 @@ fun SpeechInputSection(
                 }
             }
 
-            Box(
-                modifier = Modifier.height(100.dp), contentAlignment = Alignment.Center
-            ) {
-                when (state) {
-                    State.ACTIVE -> SpeechInputIndicator()
-                    State.LOADING -> CircularProgressIndicator(
-                        color = MaterialTheme.colors.onSurface, strokeWidth = 5.dp
-                    )
-                    State.READY -> SpeechInputStartButton(onStartClicked)
-                    State.TEXT_INPUT -> SpeechSubmitButton(onSubmitClicked)
+            if (state != State.TEXT_INPUT) {
+                Box(
+                    modifier = Modifier.height(100.dp), contentAlignment = Alignment.Center
+                ) {
+                    when (state) {
+                        State.ACTIVE -> SpeechInputIndicator()
+                        State.LOADING -> CircularProgressIndicator(
+                            color = MaterialTheme.colors.onSurface, strokeWidth = 5.dp
+                        )
+                        State.READY -> SpeechInputStartButton(onStartClicked)
+                        State.TEXT_INPUT -> {}
+                    }
                 }
             }
         }

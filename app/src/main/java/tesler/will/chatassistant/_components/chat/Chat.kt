@@ -2,13 +2,12 @@ package tesler.will.chatassistant._components.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import dev.jeziellago.compose.markdowntext.MarkdownText
+import tesler.will.chatassistant._components.markdown.MarkdownText
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.ChatModel.State.CREATED
@@ -28,7 +27,7 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
         }
     }
 
-    val hPadding = MaterialTheme.spacing.large
+    val hPadding = MaterialTheme.spacing.xlarge
     val vPadding = MaterialTheme.spacing.xxlarge
 
     if (chatModel.text.isNotBlank()) {
@@ -40,14 +39,12 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
                 .padding(hPadding, vPadding),
             contentAlignment = Center
         ) {
-            SelectionContainer(modifier = Modifier.wrapContentWidth()) {
-                MarkdownText(
-                    modifier = Modifier.wrapContentWidth(),
-                    markdown = chatModel.text,
-                    color = MaterialTheme.colors.onSurface,
-                    style = MaterialTheme.typography.body1
-                )
-            }
+            MarkdownText(
+                modifier = Modifier.wrapContentWidth(),
+                markdown = chatModel.text,
+                color = MaterialTheme.colors.onSurface,
+                style = MaterialTheme.typography.body1,
+            )
         }
     }
 }
@@ -56,6 +53,12 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
 @Composable
 private fun ChatPreview() {
     Previews.Wrap(true) {
-        Chat(Modifier, ChatModel("Hi, how can I help?", ChatModel.State.CREATED))
+        Chat(
+            Modifier,
+            ChatModel(
+                "As an AI language model, I don't have feelings or emotions",
+                ChatModel.State.CREATED
+            )
+        )
     }
 }

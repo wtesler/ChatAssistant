@@ -1,6 +1,7 @@
 package tesler.will.chatassistant._components.card
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -51,6 +52,7 @@ fun Card(defaultVisible: Boolean = false) {
                 .padding(0.dp, MaterialTheme.spacing.medium)
                 .border(BorderStroke(0.dp, Color.Black), shape)
                 .clip(shape)
+                .animateContentSize()
                 .noRippleClickable {},
             color = MaterialTheme.colors.surface
         ) {
