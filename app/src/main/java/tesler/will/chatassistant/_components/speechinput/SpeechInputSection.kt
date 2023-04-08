@@ -1,7 +1,6 @@
 package tesler.will.chatassistant._components.speechinput
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -16,6 +15,7 @@ import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.shadow.ElevationShadow
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
 import tesler.will.chatassistant._components.speechinput.keyboardbutton.KeyboardButton
+import tesler.will.chatassistant._components.speechinput.loading.SpeechSubmitLoading
 import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
 import tesler.will.chatassistant._components.speechinput.submitbutton.SpeechSubmitButton
@@ -28,6 +28,7 @@ fun SpeechInputSection(
     onStartClicked: () -> Unit,
     onSubmitClicked: () -> Unit,
     onKeyboardClicked: () -> Unit,
+    onStopClicked: () -> Unit,
     onTextChanged: (text: String) -> Unit,
     focusRequester: FocusRequester
 ) {
@@ -93,9 +94,7 @@ fun SpeechInputSection(
                 ) {
                     when (state) {
                         State.ACTIVE -> SpeechInputIndicator()
-                        State.LOADING -> CircularProgressIndicator(
-                            color = MaterialTheme.colors.onSurface, strokeWidth = 5.dp
-                        )
+                        State.LOADING -> SpeechSubmitLoading(onStopClicked)
                         State.READY -> SpeechInputStartButton(onStartClicked)
                         State.TEXT_INPUT -> {}
                     }
@@ -133,6 +132,7 @@ private fun SpeechInputSectionPreview() {
     Previews.Wrap(mainTestModule, true) {
         SpeechInputSection(
             SpeechInputSectionViewModel(State.TEXT_INPUT, "Hi, how can I help?"),
+            {},
             {},
             {},
             {},

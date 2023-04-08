@@ -11,6 +11,7 @@ interface IChatManager {
     fun clearChats()
     fun clearErrorChats()
     fun submitChat(chatModel: ChatModel, scope: CoroutineScope)
+    fun cancelSubmit()
     fun addListener(listener: Listener)
     fun removeListener(listener: Listener)
 

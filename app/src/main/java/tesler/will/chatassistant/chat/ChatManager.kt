@@ -1,9 +1,8 @@
 package tesler.will.chatassistant.chat
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import android.util.Log
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import tesler.will.chatassistant.chat.ChatModel.State.CREATED
@@ -15,6 +14,7 @@ import java.net.SocketTimeoutException
 
 class ChatManager(private val apiService: ApiService) : IChatManager {
     private var chats: ArrayList<ChatModel> = ArrayList()
+    private var submitJob: Job? = null
 
     private val listeners = mutableListOf<Listener>()
 
@@ -98,11 +98,16 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
     }
 
     override fun submitChat(chatModel: ChatModel, scope: CoroutineScope) {
-        scope.launch {
+        val isJobActive = submitJob?.isActive
+        if (isJobActive != null && isJobActive) {
+            Log.w("Chat Manager", "Cannot submit because currently submitting.")
+            return
+        }
+
+        submitJob = scope.launch {
             val chatsCopy = ArrayList(chats)
             chatsCopy.add(chatModel)
 
-            // Prepares our input chat
             val inputText = chatModel.text
             val inputChat = chatModel.copy(text = "")
             val inputChatId = inputChat.id
@@ -117,7 +122,8 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
             try {
                 apiService.updateChat(ChatUpdateRequest.build(chatsCopy))
                     .stream()
-                    .catch { cause ->  throw cause}
+                    .catch { cause -> throw cause }
+                    .cancellable()
                     .collect { string ->
                         responseChat.text += string
                         updateChat(responseChat)
@@ -152,11 +158,23 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
                 responseChat.text = message
                 responseChat.state = ERROR
                 updateChat(responseChat)
+            } catch (e: CancellationException) {
+                message = "Cancellation Occurred."
+                isSuccess = false
+                removeChat(inputChatId)
+                removeChat(responseChat.id)
             } finally {
                 for (listener in listeners) {
                     listener.onChatSubmitResponse(isSuccess, message)
                 }
             }
+        }
+    }
+
+    override fun cancelSubmit() {
+        val isJobActive = submitJob?.isActive
+        if (isJobActive != null && isJobActive) {
+            submitJob?.cancel()
         }
     }
 

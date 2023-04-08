@@ -203,7 +203,7 @@ fun ChatSection() {
             }
         }
 
-        val shadowColor = Color(0x70000000)
+        val shadowColor = Color(0x60000000)
         val shadowHeight = 40.dp
 
         if (isTopOverflowing) {

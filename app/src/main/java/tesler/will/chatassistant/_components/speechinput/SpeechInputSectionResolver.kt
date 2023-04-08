@@ -156,6 +156,10 @@ fun SpeechInputSectionResolver() {
         }
     }
 
+    fun onStopClicked() {
+        chatManager.cancelSubmit()
+    }
+
     fun onTextChanged(string: String) {
         setText(string)
     }
@@ -178,6 +182,7 @@ fun SpeechInputSectionResolver() {
         ::onStartClicked,
         ::submitChat,
         ::onKeyboardClicked,
+        ::onStopClicked,
         ::onTextChanged,
         focusRequester
     )

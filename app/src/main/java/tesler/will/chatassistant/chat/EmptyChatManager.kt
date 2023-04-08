@@ -29,6 +29,9 @@ class EmptyChatManager : IChatManager {
     override fun submitChat(chatModel: ChatModel, scope: CoroutineScope) {
     }
 
+    override fun cancelSubmit() {
+    }
+
     override fun addListener(listener: IChatManager.Listener) {
     }
 
