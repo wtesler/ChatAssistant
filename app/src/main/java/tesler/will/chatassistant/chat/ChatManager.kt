@@ -87,11 +87,10 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
         return flow {
             byteStream().use { inputStream ->
                 val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                var numBytes = inputStream.read(buffer)
-                while (numBytes > 0) {
+                var numBytes: Int
+                while (run { numBytes = inputStream.read(buffer); numBytes > 0 }) {
                     val string = String(buffer.copyOfRange(0, numBytes), Charsets.UTF_8)
                     emit(string)
-                    numBytes = inputStream.read(buffer)
                 }
             }
         }.flowOn(Dispatchers.IO)

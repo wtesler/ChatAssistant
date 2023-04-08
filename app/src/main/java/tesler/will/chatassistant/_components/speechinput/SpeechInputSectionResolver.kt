@@ -158,6 +158,7 @@ fun SpeechInputSectionResolver() {
 
     fun onStopClicked() {
         chatManager.cancelSubmit()
+        speechOutputManager.stop()
     }
 
     fun onTextChanged(string: String) {
