@@ -29,7 +29,12 @@ fun SettingsButton(
     onIconClick: () -> Unit,
     onSettingsDismiss: () -> Unit
 ) {
-    Box(modifier = modifier.size(MaterialTheme.spacing.icon_normal)) {
+    val padding = 2.dp
+    Box(
+        modifier = modifier
+            .size(MaterialTheme.spacing.icon_normal)
+            .padding(padding)
+    ) {
         Image(
             modifier = Modifier
                 .fillMaxSize()

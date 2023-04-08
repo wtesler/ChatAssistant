@@ -58,7 +58,7 @@ fun SpeechInputSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(hPadding, 70.dp, hPadding, 50.dp),
+                        .padding(hPadding, 70.dp, hPadding, 60.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     TextField(

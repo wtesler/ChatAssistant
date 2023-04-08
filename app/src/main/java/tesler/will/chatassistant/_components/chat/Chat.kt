@@ -28,7 +28,7 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
     }
 
     val hPadding = MaterialTheme.spacing.xlarge
-    val vPadding = MaterialTheme.spacing.xxlarge
+    val vPadding = MaterialTheme.spacing.xlarge
 
     if (chatModel.text.isNotBlank()) {
         Box(
