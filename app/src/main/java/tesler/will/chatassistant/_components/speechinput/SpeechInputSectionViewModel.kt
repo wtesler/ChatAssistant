@@ -2,8 +2,7 @@ package tesler.will.chatassistant._components.speechinput
 
 data class SpeechInputSectionViewModel(
     val state: State = State.ACTIVE,
-    val text: String = "",
-    val numChats: Int = 0
+    val text: String = ""
 )
 
 enum class State {

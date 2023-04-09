@@ -20,7 +20,7 @@ fun SpeechInputIndicator() {
         modifier = Modifier
             .wrapContentWidth()
             .height(32.dp)
-            .offset(0.dp, (-4).dp),
+            .offset(0.dp, (-5).dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         SpeechInputIndicatorDot(

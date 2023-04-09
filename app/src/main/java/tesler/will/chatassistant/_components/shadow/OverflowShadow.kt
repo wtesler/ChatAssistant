@@ -19,7 +19,6 @@ fun OverflowShadow(modifier: Modifier, startColor: Color, endColor: Color) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp)
             .drawWithCache {
                 onDrawWithContent {
                     val gradient = Brush.verticalGradient(

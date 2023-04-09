@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.settings.SettingsScreen
 import tesler.will.chatassistant.ui.theme.AppTheme
 
@@ -19,8 +18,6 @@ class SettingsActivity : ComponentActivity() {
                 SettingsScreen(this)
             }
         }
-
-        setTheme(R.style.Theme_ChatAssistant)
 
         window.setLayout(MATCH_PARENT, MATCH_PARENT)
     }

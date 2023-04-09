@@ -5,13 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,11 +31,10 @@ fun SettingsButton(
     onIconClick: () -> Unit,
     onSettingsDismiss: () -> Unit
 ) {
-    val padding = 2.dp
     Box(
         modifier = modifier
             .size(MaterialTheme.spacing.icon_normal)
-            .padding(padding)
+            .padding(0.dp, 0.dp, 3.dp, 0.dp)
     ) {
         Image(
             modifier = Modifier
@@ -43,7 +44,6 @@ fun SettingsButton(
                     indication = rememberRipple(bounded = false),
                     onClick = onIconClick
                 )
-                .padding(0.dp, 0.dp)
                 .align(Center),
             painter = painterResource(id = R.drawable.ic_launcher_round),
             contentDescription = "Settings Button",

@@ -24,6 +24,7 @@ import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
+import tesler.will.chatassistant._components.shadow.ElevationShadow
 import tesler.will.chatassistant._components.shadow.OverflowShadow
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.IChatManager
@@ -224,6 +225,10 @@ fun ChatSection() {
                 startColor = Color.Transparent,
                 endColor = shadowColor
             )
+        }
+
+        if (chats.any {x -> x.text.isNotBlank()}) {
+            ElevationShadow(Modifier.align(Alignment.BottomCenter))
         }
     }
 }

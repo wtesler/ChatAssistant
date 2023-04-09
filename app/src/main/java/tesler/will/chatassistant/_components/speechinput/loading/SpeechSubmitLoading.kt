@@ -19,17 +19,19 @@ import tesler.will.chatassistant.modules.main.mainTestModule
 
 @Composable
 fun SpeechSubmitLoading(onStopClicked: () -> Unit) {
-    Box(modifier = Modifier.size(65.dp)) {
+    val SIZE = 65.dp
+
+    Box(modifier = Modifier.size(SIZE)) {
         CircularProgressIndicator(
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(60.dp),
-            color = MaterialTheme.colors.onSurface, strokeWidth = 5.dp
+                .size(SIZE.times(.9f)),
+            color = MaterialTheme.colors.primaryVariant, strokeWidth = 5.dp
         )
 
         Box(
             modifier = Modifier
-                .size(20.dp)
+                .size(SIZE.times(.25f))
                 .background(MaterialTheme.colors.onSurface)
                 .align(Alignment.Center)
                 .clickable(

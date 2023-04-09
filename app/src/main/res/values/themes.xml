@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="Theme.ChatAssistant" parent="android:Theme.Material.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-
         <item name="android:windowFrame">@null</item>
         <item name="android:windowTitleStyle">@null</item>
         <item name="android:windowBackground">@color/translucent</item>
@@ -11,6 +10,7 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
         <item name="android:windowCloseOnTouchOutside">false</item>
         <item name="android:windowActionModeOverlay">true</item>

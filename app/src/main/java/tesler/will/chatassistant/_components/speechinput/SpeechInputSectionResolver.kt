@@ -3,10 +3,7 @@ package tesler.will.chatassistant._components.speechinput
 import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.compose.runtime.*
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.tooling.preview.Preview
-import kotlinx.coroutines.android.awaitFrame
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.chat.ChatModel
@@ -23,7 +20,6 @@ fun SpeechInputSectionResolver() {
 
     var viewModel by remember { mutableStateOf(SpeechInputSectionViewModel()) }
     var chat by remember { mutableStateOf(ChatModel()) }
-    val focusRequester = remember { FocusRequester() }
     val scope = rememberCoroutineScope()
 
     fun setState(state: State) {
@@ -33,10 +29,6 @@ fun SpeechInputSectionResolver() {
     fun setText(text: String) {
         chat.text = text
         viewModel = viewModel.copy(text = text)
-    }
-
-    fun setNumChats(num: Int) {
-        viewModel = viewModel.copy(numChats = num)
     }
 
     fun submitChat() {
@@ -115,28 +107,19 @@ fun SpeechInputSectionResolver() {
                 setState(State.READY)
                 setText("")
             }
-
-            override fun onNumChatsChanged(num: Int) {
-                setNumChats(num)
-            }
         }
     }
 
-    val start = {
+    fun startSpeechInput() {
         setState(State.ACTIVE)
 
         val defaultMessage = if (chatManager.numChats() == 0) "Hi, how can I help?" else ""
-
         chat = ChatModel(defaultMessage)
         setText(defaultMessage)
 
-        speechInputManager.start()
-    }
-
-    fun onStartClicked() {
         speechOutputManager.stop()
         chatManager.clearErrorChats()
-        start()
+        speechInputManager.start()
     }
 
     fun onKeyboardClicked() {
@@ -148,11 +131,6 @@ fun SpeechInputSectionResolver() {
             speechInputManager.stop()
             chat = ChatModel("")
             setState(State.TEXT_INPUT)
-            scope.launch {
-                // Don't love this concept
-                awaitFrame()
-                focusRequester.requestFocus()
-            }
         }
     }
 
@@ -169,7 +147,7 @@ fun SpeechInputSectionResolver() {
         chatManager.addListener(chatListener)
         speechInputManager.addListener(speechListener)
         speechInputManager.init()
-        start()
+        startSpeechInput()
 
         onDispose {
             chatManager.removeListener(chatListener)
@@ -180,12 +158,11 @@ fun SpeechInputSectionResolver() {
 
     SpeechInputSection(
         viewModel,
-        ::onStartClicked,
+        ::startSpeechInput,
         ::submitChat,
         ::onKeyboardClicked,
         ::onStopClicked,
-        ::onTextChanged,
-        focusRequester
+        ::onTextChanged
     )
 }
 

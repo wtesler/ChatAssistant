@@ -35,7 +35,8 @@ fun VoiceSetting() {
                     gender.replaceFirstChar { it.titlecase(Locale.getDefault()) }
             }
         }
-        var displayName = locale.displayLanguage
+        var displayName = "${locale.displayLanguage} - ${locale.displayCountry}"
+
         if (gender.isNotEmpty()) {
             displayName += " - $gender"
         }

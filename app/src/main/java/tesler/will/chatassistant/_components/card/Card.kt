@@ -4,16 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -23,14 +21,20 @@ import tesler.will.chatassistant._components.speechinput.SpeechInputSectionResol
 import tesler.will.chatassistant.modifiers.noRippleClickable
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.ui.theme.spacing
+import tesler.will.chatassistant.window.WindowHelper
 
 @Composable
 fun Card(defaultVisible: Boolean = false) {
     val ENTRANCE_ANIM_SPEED_MS = 350
 
+    val context = LocalContext.current
+
     var visible by remember { mutableStateOf(defaultVisible) }
 
-    val shape = RoundedCornerShape(MaterialTheme.spacing.large)
+    val navBarHeight = remember { WindowHelper.getNavBarHeightDp(context) }
+
+    val shape =
+        RoundedCornerShape(MaterialTheme.spacing.large, MaterialTheme.spacing.large, 0.dp, 0.dp)
 
     LaunchedEffect(Unit) {
         visible = true
@@ -40,36 +44,41 @@ fun Card(defaultVisible: Boolean = false) {
         visible,
         enter = slideInVertically(
             tween(ENTRANCE_ANIM_SPEED_MS, easing = LinearOutSlowInEasing),
-            initialOffsetY = {fullHeight ->  fullHeight}
+            initialOffsetY = { fullHeight -> fullHeight }
         )
     ) {
-        Surface(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .widthIn(Dp.Unspecified, 500.dp)
-                .padding(0.dp, MaterialTheme.spacing.medium)
-                .border(BorderStroke(0.dp, Color.Black), shape)
                 .clip(shape)
-                .noRippleClickable {},
-            color = MaterialTheme.colors.surface
+                .fillMaxWidth()
+                .widthIn(Dp.Unspecified, 500.dp)
+                .wrapContentHeight()
+                .noRippleClickable {}
         ) {
-            Column(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Bottom
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(MaterialTheme.colors.surface)
+                    .padding(0.dp, 0.dp, 0.dp, navBarHeight)
             ) {
-
-                Box(
-                    modifier = Modifier.weight(1f, false)
-                ) {
-                    ChatSection()
-                }
-
-                Box(
+                Column(
                     modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Bottom
                 ) {
-                    SpeechInputSectionResolver()
+
+                    Box(
+                        modifier = Modifier.weight(1f, false)
+                    ) {
+                        ChatSection()
+                    }
+
+                    Box(
+                        modifier = Modifier
+                    ) {
+                        SpeechInputSectionResolver()
+                    }
                 }
             }
         }

@@ -3,22 +3,18 @@ package tesler.will.chatassistant._components.speechinput
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant._components.preview.Previews
-import tesler.will.chatassistant._components.shadow.ElevationShadow
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
 import tesler.will.chatassistant._components.speechinput.keyboardbutton.KeyboardButton
 import tesler.will.chatassistant._components.speechinput.loading.SpeechSubmitLoading
 import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
-import tesler.will.chatassistant._components.speechinput.submitbutton.SpeechSubmitButton
+import tesler.will.chatassistant._components.speechinput.textinput.SpeechInputTextField
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.ui.theme.spacing
 
@@ -29,54 +25,44 @@ fun SpeechInputSection(
     onSubmitClicked: () -> Unit,
     onKeyboardClicked: () -> Unit,
     onStopClicked: () -> Unit,
-    onTextChanged: (text: String) -> Unit,
-    focusRequester: FocusRequester
+    onTextChanged: (text: String) -> Unit
 ) {
     val state = viewModel.state
     val text = viewModel.text
-    val numChats = viewModel.numChats
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentWidth()
+            .wrapContentHeight()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentWidth(),
+                .wrapContentHeight(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (numChats > 0) {
-                ElevationShadow()
-            }
-
-            val hPadding = MaterialTheme.spacing.xlarge
-            val bottomPadding = MaterialTheme.spacing.small
 
             if (state == State.TEXT_INPUT) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(hPadding, 70.dp, hPadding, 60.dp),
+                        .padding(0.dp, 70.dp, 0.dp, 60.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    TextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester),
-                        value = text,
-                        onValueChange = onTextChanged,
-                        trailingIcon = { SpeechSubmitButton(onSubmitClicked) }
+                    SpeechInputTextField(
+                        text = text,
+                        onSubmitClicked = onSubmitClicked,
+                        onTextChanged = onTextChanged
                     )
                 }
             } else if (text.isNotBlank()) {
+                val hPadding = MaterialTheme.spacing.xlarge
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(hPadding, 55.dp, hPadding, bottomPadding),
+                        .padding(hPadding, 50.dp, hPadding, 0.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -136,8 +122,7 @@ private fun SpeechInputSectionPreview() {
             {},
             {},
             {},
-            {},
-            FocusRequester()
+            {}
         )
     }
 }

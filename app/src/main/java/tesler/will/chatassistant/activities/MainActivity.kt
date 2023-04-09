@@ -2,9 +2,9 @@ package tesler.will.chatassistant.activities
 
 import android.os.Bundle
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.Main
 
 class MainActivity : ComponentActivity() {
@@ -16,9 +16,8 @@ class MainActivity : ComponentActivity() {
             Main(this)
         }
 
-        setTheme(R.style.Theme_ChatAssistant)
-
         window.setLayout(MATCH_PARENT, MATCH_PARENT)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onStop() {
