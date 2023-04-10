@@ -1,7 +1,6 @@
 package tesler.will.chatassistant._components.speechinput
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,7 +15,7 @@ import tesler.will.chatassistant._components.speechinput.settingsbutton.Settings
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
 import tesler.will.chatassistant._components.speechinput.textinput.SpeechInputTextField
 import tesler.will.chatassistant.modules.main.mainTestModule
-import tesler.will.chatassistant.ui.theme.spacing
+import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
 fun SpeechInputSection(
@@ -57,7 +56,7 @@ fun SpeechInputSection(
                     )
                 }
             } else if (text.isNotBlank()) {
-                val hPadding = MaterialTheme.spacing.xlarge
+                val hPadding = AppTheme.dimens.xlarge
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -68,8 +67,7 @@ fun SpeechInputSection(
                     Text(
                         modifier = Modifier.wrapContentWidth(),
                         text = text,
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.onSurface
+                        style = AppTheme.type.body1
                     )
                 }
             }
@@ -93,7 +91,7 @@ fun SpeechInputSection(
                 .wrapContentWidth()
                 .wrapContentHeight()
                 .align(Alignment.TopEnd)
-                .padding(MaterialTheme.spacing.medium)
+                .padding(AppTheme.dimens.medium)
         ) {
             SettingsButtonResolver(modifier = Modifier)
         }
@@ -104,7 +102,7 @@ fun SpeechInputSection(
                     .wrapContentWidth()
                     .wrapContentHeight()
                     .align(Alignment.BottomEnd)
-                    .padding(MaterialTheme.spacing.medium)
+                    .padding(AppTheme.dimens.medium)
             ) {
                 KeyboardButton(modifier = Modifier, onKeyboardClicked)
             }

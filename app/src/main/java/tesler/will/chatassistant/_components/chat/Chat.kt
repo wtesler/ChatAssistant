@@ -2,33 +2,33 @@ package tesler.will.chatassistant._components.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import tesler.will.chatassistant._components.markdown.MarkdownText
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.chat.ChatModel
 import tesler.will.chatassistant.chat.ChatModel.State.CREATED
 import tesler.will.chatassistant.chat.ChatModel.State.ERROR
-import tesler.will.chatassistant.ui.theme.spacing
+import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
 fun Chat(modifier: Modifier, chatModel: ChatModel) {
-    var backgroundColor = MaterialTheme.colors.background
+    var backgroundColor = Color.Transparent
     if (chatModel.state == ERROR) {
-        backgroundColor = MaterialTheme.colors.error
+        backgroundColor = AppTheme.colors.chatError
     } else if (chatModel.state == CREATED) {
         if (chatModel.isUser) {
-            backgroundColor = MaterialTheme.colors.primary
+            backgroundColor = AppTheme.colors.chatPrimary
         } else {
-            backgroundColor = MaterialTheme.colors.primaryVariant
+            backgroundColor = AppTheme.colors.chatSecondary
         }
     }
 
-    val hPadding = MaterialTheme.spacing.xlarge
-    val vPadding = MaterialTheme.spacing.xlarge
+    val hPadding = AppTheme.dimens.xlarge
+    val vPadding = AppTheme.dimens.xlarge
 
     if (chatModel.text.isNotBlank()) {
         Box(
@@ -42,8 +42,7 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
             MarkdownText(
                 modifier = Modifier.wrapContentWidth(),
                 markdown = chatModel.text,
-                color = MaterialTheme.colors.onSurface,
-                style = MaterialTheme.typography.body1,
+                style = AppTheme.type.body1
             )
         }
     }

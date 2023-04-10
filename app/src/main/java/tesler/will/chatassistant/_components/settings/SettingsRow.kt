@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
@@ -24,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.settings.voice.VoiceOption
 import tesler.will.chatassistant.modules.settings.settingsTestModule
-import tesler.will.chatassistant.ui.theme.spacing
+import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
 fun <T : SettingsOption> SettingsRow(
@@ -39,15 +38,14 @@ fun <T : SettingsOption> SettingsRow(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(MaterialTheme.spacing.xlarge, MaterialTheme.spacing.xlarge)
+            .padding(AppTheme.dimens.xlarge, AppTheme.dimens.xlarge)
     ) {
         Text(
             text = title,
             modifier = Modifier
                 .fillMaxWidth(.25f)
                 .align(CenterVertically),
-            color = MaterialTheme.colors.onSurface,
-            style = MaterialTheme.typography.body1
+            style = AppTheme.type.body1
         )
 
         val shape = RoundedCornerShape(10.dp)
@@ -61,9 +59,8 @@ fun <T : SettingsOption> SettingsRow(
         ) {
             Text(
                 text = selected.displayName,
-                color = MaterialTheme.colors.onSurface,
                 textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.body1,
+                style = AppTheme.type.body1,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(
@@ -71,15 +68,15 @@ fun <T : SettingsOption> SettingsRow(
                         indication = rememberRipple(bounded = false),
                         onClick = { isExpanded = !isExpanded }
                     )
-                    .background(MaterialTheme.colors.primaryVariant)
-                    .padding(MaterialTheme.spacing.medium, MaterialTheme.spacing.large + 2.dp)
+                    .background(AppTheme.colors.textFieldPrimary)
+                    .padding(AppTheme.dimens.medium, AppTheme.dimens.large + 2.dp)
 
             )
 
             DropdownMenu(
                 modifier = Modifier
                     .fillMaxWidth(.653f)
-                    .background(MaterialTheme.colors.secondaryVariant),
+                    .background(AppTheme.colors.dropdownBackground),
                 expanded = isExpanded,
                 onDismissRequest = { isExpanded = false },
                 offset = DpOffset(0.dp, 5.dp)
@@ -96,9 +93,8 @@ fun <T : SettingsOption> SettingsRow(
                             Text(
                                 text = (option.displayName),
                                 textAlign = TextAlign.Start,
-                                color = MaterialTheme.colors.onSurface,
                                 modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.body1
+                                style = AppTheme.type.body1
                             )
                         }
                     )

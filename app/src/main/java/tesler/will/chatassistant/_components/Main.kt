@@ -10,7 +10,7 @@ import tesler.will.chatassistant._components.permissions.PermissionWrapper
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.modules.main.mainModule
 import tesler.will.chatassistant.modules.main.mainTestModule
-import tesler.will.chatassistant.ui.theme.AppTheme
+import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
 fun Main(activity: Activity) {

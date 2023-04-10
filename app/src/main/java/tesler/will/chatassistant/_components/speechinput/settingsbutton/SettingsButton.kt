@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -22,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.modules.main.mainTestModule
-import tesler.will.chatassistant.ui.theme.spacing
+import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
 fun SettingsButton(
@@ -33,7 +32,7 @@ fun SettingsButton(
 ) {
     Box(
         modifier = modifier
-            .size(MaterialTheme.spacing.icon_normal)
+            .size(AppTheme.dimens.icon_normal)
             .padding(0.dp, 0.dp, 3.dp, 0.dp)
     ) {
         Image(
@@ -47,13 +46,12 @@ fun SettingsButton(
                 .align(Center),
             painter = painterResource(id = R.drawable.ic_launcher_round),
             contentDescription = "Settings Button",
-//            colorFilter = tint(MaterialTheme.colors.secondaryVariant)
         )
 
         DropdownMenu(
             modifier = Modifier
                 .align(Center)
-                .background(MaterialTheme.colors.secondaryVariant),
+                .background(AppTheme.colors.dropdownBackground),
             expanded = model.isExpanded,
             offset = DpOffset(0.dp, 10.dp),
             onDismissRequest = onSettingsDismiss
@@ -68,6 +66,7 @@ fun SettingsButton(
                             option.text,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
+                            style = AppTheme.type.body1
                         )
                     },
                     onClick = option.onClick,

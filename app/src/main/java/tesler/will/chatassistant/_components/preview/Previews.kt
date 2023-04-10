@@ -5,7 +5,7 @@ import androidx.compose.ui.platform.LocalContext
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
-import tesler.will.chatassistant.ui.theme.AppTheme
+import tesler.will.chatassistant.theme.AppTheme
 
 /**
  * Provides a `Wrap` method which is commonly useful in Preview composables.
@@ -15,7 +15,7 @@ class Previews {
         @Composable
         fun Wrap(
             modules: List<Module> = listOf(),
-            isLightTheme: Boolean = true,
+            isDarkTheme: Boolean = true,
             content: @Composable () -> Unit
         ) {
             val context = LocalContext.current
@@ -23,7 +23,7 @@ class Previews {
                 androidContext(context)
                 modules(modules)
             }
-            AppTheme(darkTheme = !isLightTheme) {
+            AppTheme(isDarkTheme = isDarkTheme) {
                 content()
             }
         }
@@ -31,20 +31,20 @@ class Previews {
         @Composable
         fun Wrap(
             module: Module,
-            isLightTheme: Boolean = true,
+            isDarkTheme: Boolean = true,
             content: @Composable () -> Unit
         ) {
-            Wrap(listOf(module), isLightTheme) {
+            Wrap(listOf(module), isDarkTheme) {
                 content()
             }
         }
 
         @Composable
         fun Wrap(
-            isLightTheme: Boolean = true,
+            isDarkTheme: Boolean = true,
             content: @Composable () -> Unit
         ) {
-            Wrap(listOf(), isLightTheme) {
+            Wrap(listOf(), isDarkTheme) {
                 content()
             }
         }

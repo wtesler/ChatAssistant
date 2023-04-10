@@ -4,7 +4,6 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,6 +13,7 @@ import org.koin.compose.koinInject
 import tesler.will.chatassistant.modules.speech.speechTestModule
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
+import tesler.will.chatassistant.theme.AppTheme
 import kotlin.math.pow
 
 @Composable
@@ -25,7 +25,7 @@ fun SpeechInputIndicatorDot(
     amplitudePow: Float
 ) {
     val CIRCLE_LENGTH = 9.dp
-    val COLOR = MaterialTheme.colors.onSurface
+    val COLOR = AppTheme.colors.iconPrimary
     val MAX_STRETCH = 2.5f
     val STRETCH_SMOOTHING = .6f
 

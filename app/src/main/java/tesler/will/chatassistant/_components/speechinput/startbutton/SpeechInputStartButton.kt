@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.modules.main.mainTestModule
+import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
 fun SpeechInputStartButton(onClick: () -> Unit) {
@@ -32,7 +32,7 @@ fun SpeechInputStartButton(onClick: () -> Unit) {
                 .height(32.dp),
             painter = painterResource(id = R.drawable.microphone),
             contentDescription = "Speech Start Button",
-            colorFilter = tint(MaterialTheme.colors.onSurface)
+            colorFilter = tint(AppTheme.colors.iconPrimary)
         )
     }
 }
