@@ -33,7 +33,7 @@ fun SettingsButton(
     Box(
         modifier = modifier
             .size(AppTheme.dimens.icon_normal)
-            .padding(0.dp, 0.dp, 3.dp, 0.dp)
+            .padding(0.dp, 0.dp, 0.dp, 0.dp)
     ) {
         Image(
             modifier = Modifier

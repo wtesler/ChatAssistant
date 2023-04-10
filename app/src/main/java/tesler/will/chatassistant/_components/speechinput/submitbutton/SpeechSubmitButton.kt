@@ -23,7 +23,7 @@ fun SpeechSubmitButton(onClick: () -> Unit) {
     Image(
         modifier = Modifier
             .height(25.dp)
-            .padding(0.dp, 0.dp, 10.dp, 0.dp)
+            .padding(0.dp, 0.dp, 7.dp, 0.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = false),

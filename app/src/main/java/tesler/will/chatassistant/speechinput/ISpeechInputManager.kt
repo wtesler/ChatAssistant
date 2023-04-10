@@ -6,6 +6,7 @@ interface ISpeechInputManager {
     fun destroy()
     fun start()
     fun stop()
+    fun isAvailable(): Boolean
     fun addListener(listener: Listener)
     fun removeListener(listener: Listener)
 

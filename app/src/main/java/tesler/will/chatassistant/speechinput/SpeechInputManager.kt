@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.widget.Toast
+import android.util.Log
 import tesler.will.chatassistant.speechinput.ISpeechInputManager.Listener
 import tesler.will.chatassistant.speechinput.listener.SpeechListener
 
@@ -26,8 +26,10 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
             throw Exception("Already started. You must call stop first.")
         }
 
-        if (!SpeechRecognizer.isRecognitionAvailable(context)) {
-            Toast.makeText(context, "Speech recognition unavailable.", Toast.LENGTH_LONG).show()
+        if (!isAvailable()) {
+            for (listener in listeners) {
+                listener.onError(-1)
+            }
             return
         }
 
@@ -54,7 +56,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
 
     override fun start() {
         if (speechRecognizer == null) {
-            Toast.makeText(context, "Speech recognition unavailable.", Toast.LENGTH_LONG).show()
+            Log.w("Speech Input Manager", "Speech recognition unavailable.")
             return
         }
 
@@ -88,6 +90,10 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
         text = null
         amplitude = null
         errorCode = null
+    }
+
+    override fun isAvailable(): Boolean {
+        return SpeechRecognizer.isRecognitionAvailable(context)
     }
 
     override fun addListener(listener: Listener) {

@@ -15,6 +15,10 @@ class EmptySpeechInputManager : ISpeechInputManager {
     override fun stop() {
     }
 
+    override fun isAvailable(): Boolean {
+        return false
+    }
+
     override fun addListener(listener: Listener) {
     }
 

@@ -7,13 +7,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
-import tesler.will.chatassistant._components.speechinput.keyboardbutton.KeyboardButton
 import tesler.will.chatassistant._components.speechinput.loading.SpeechSubmitLoading
 import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
 import tesler.will.chatassistant._components.speechinput.textinput.SpeechInputTextField
+import tesler.will.chatassistant._components.speechinput.typebutton.TypeButton
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.theme.AppTheme
 
@@ -46,7 +47,7 @@ fun SpeechInputSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(0.dp, 70.dp, 0.dp, 60.dp),
+                        .padding(0.dp, 55.dp, 0.dp, 0.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     SpeechInputTextField(
@@ -96,7 +97,7 @@ fun SpeechInputSection(
             SettingsButtonResolver(modifier = Modifier)
         }
 
-        if (viewModel.state != State.LOADING) {
+        if (viewModel.state != State.LOADING && viewModel.state != State.TEXT_INPUT) {
             Box(
                 modifier = Modifier
                     .wrapContentWidth()
@@ -104,7 +105,7 @@ fun SpeechInputSection(
                     .align(Alignment.BottomEnd)
                     .padding(AppTheme.dimens.medium)
             ) {
-                KeyboardButton(modifier = Modifier, onKeyboardClicked)
+                TypeButton(modifier = Modifier, R.drawable.keyboard, onKeyboardClicked)
             }
         }
     }

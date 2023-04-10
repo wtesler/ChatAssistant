@@ -2,7 +2,12 @@ package tesler.will.chatassistant._components.speechinput
 
 import android.speech.SpeechRecognizer
 import android.util.Log
+import android.view.WindowInsets
+import android.view.WindowInsetsAnimation
+import android.widget.Toast
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
@@ -17,6 +22,9 @@ fun SpeechInputSectionResolver() {
     val speechInputManager = koinInject<ISpeechInputManager>()
     val speechOutputManager = koinInject<ISpeechOutputManager>()
     val chatManager = koinInject<IChatManager>()
+
+    val context = LocalContext.current
+    val view = LocalView.current
 
     var viewModel by remember { mutableStateOf(SpeechInputSectionViewModel()) }
     var chat by remember { mutableStateOf(ChatModel()) }
@@ -69,6 +77,11 @@ fun SpeechInputSectionResolver() {
                         chatManager.addChat(chat)
                         setState(State.READY)
                     }
+                    -1 -> {
+                        chat.text = "Speech Recognition Unavailable."
+                        chatManager.addChat(chat)
+                        setState(State.READY)
+                    }
                     SpeechRecognizer.ERROR_CLIENT -> {
                         val message = "Error. Status code $statusCode."
                         if (viewModel.state == State.TEXT_INPUT) {
@@ -111,6 +124,12 @@ fun SpeechInputSectionResolver() {
     }
 
     fun startSpeechInput() {
+        if (!speechInputManager.isAvailable()) {
+            setState(State.READY)
+            Toast.makeText(context, "Speech recognition unavailable.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         setState(State.ACTIVE)
 
         val defaultMessage = if (chatManager.numChats() == 0) "Hi, how can I help?" else ""
@@ -143,16 +162,40 @@ fun SpeechInputSectionResolver() {
         setText(string)
     }
 
+    val insetListener = remember {
+        object :
+            WindowInsetsAnimation.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
+            override fun onProgress(
+                insets: WindowInsets,
+                runningAnimations: MutableList<WindowInsetsAnimation>
+            ): WindowInsets {
+                return insets
+            }
+
+            override fun onEnd(animation: WindowInsetsAnimation) {
+                super.onEnd(animation)
+
+                val isShowingSoftKeyboard =
+                    view.rootWindowInsets.isVisible(WindowInsets.Type.ime())
+                if (!isShowingSoftKeyboard && viewModel.state == State.TEXT_INPUT) {
+                    setText("")
+                    setState(State.READY)
+                }
+            }
+        }
+    }
+
     DisposableEffect(Unit) {
         chatManager.addListener(chatListener)
         speechInputManager.addListener(speechListener)
+        view.setWindowInsetsAnimationCallback(insetListener)
         speechInputManager.init()
         startSpeechInput()
 
         onDispose {
             chatManager.removeListener(chatListener)
+            view.setWindowInsetsAnimationCallback(null)
             speechInputManager.destroy()
-            speechInputManager.removeListener(speechListener)
         }
     }
 

@@ -1,5 +1,6 @@
-package tesler.will.chatassistant._components.speechinput.keyboardbutton
+package tesler.will.chatassistant._components.speechinput.typebutton
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,11 +22,12 @@ import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
-fun KeyboardButton(
+fun TypeButton(
     modifier: Modifier,
+    @DrawableRes id: Int,
     onClick: () -> Unit,
 ) {
-    val padding = 5.dp
+    val padding = 4.dp
 
     Box(
         modifier = modifier
@@ -40,7 +42,7 @@ fun KeyboardButton(
                     indication = rememberRipple(bounded = false),
                     onClick = onClick
                 ),
-            painter = painterResource(id = R.drawable.keyboard),
+            painter = painterResource(id = id),
             contentDescription = "Keyboard Button",
             colorFilter = tint(AppTheme.colors.iconPrimary)
         )
@@ -49,10 +51,11 @@ fun KeyboardButton(
 
 @Preview
 @Composable
-private fun KeyboardButtonPreview() {
+private fun TypeButtonPreview() {
     Previews.Wrap(mainTestModule, false) {
-        KeyboardButton(
-            Modifier
+        TypeButton(
+            Modifier,
+            R.drawable.keyboard
         ) {}
     }
 }

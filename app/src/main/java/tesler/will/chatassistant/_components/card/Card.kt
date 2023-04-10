@@ -48,30 +48,26 @@ fun Card(defaultVisible: Boolean = false) {
                 .wrapContentHeight()
                 .noRippleClickable {}
         ) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .background(AppTheme.colors.background)
                     .navigationBarsPadding()
+                    .imePadding(),
+                verticalArrangement = Arrangement.Bottom
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Bottom
+
+                Box(
+                    modifier = Modifier.weight(1f, false)
                 ) {
+                    ChatSection()
+                }
 
-                    Box(
-                        modifier = Modifier.weight(1f, false)
-                    ) {
-                        ChatSection()
-                    }
-
-                    Box(
-                        modifier = Modifier
-                    ) {
-                        SpeechInputSectionResolver()
-                    }
+                Box(
+                    modifier = Modifier
+                ) {
+                    SpeechInputSectionResolver()
                 }
             }
         }
