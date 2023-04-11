@@ -2,19 +2,25 @@ package tesler.will.chatassistant.speechinput
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.util.Log
+import android.widget.Toast
+import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.speechinput.ISpeechInputManager.Listener
 import tesler.will.chatassistant.speechinput.listener.SpeechListener
+import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 
-class SpeechInputManager(private val context: Context) : ISpeechInputManager {
+class SpeechInputManager(
+    private val context: Context,
+    private val speechOutputManager: ISpeechOutputManager,
+    private val chatManager: IChatManager
+) : ISpeechInputManager {
 
     private var speechRecognizer: SpeechRecognizer? = null
 
     private var isStarted: Boolean? = null
     private var isFinished: Boolean? = null
+    private var isListening: Boolean = false
     private var text: String? = null
     private var amplitude: Float? = null
     private var errorCode: Int? = null
@@ -55,10 +61,18 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
     }
 
     override fun start() {
-        if (speechRecognizer == null) {
-            Log.w("Speech Input Manager", "Speech recognition unavailable.")
+        if (speechRecognizer == null || !isAvailable()) {
+            Toast.makeText(context, "Speech recognition unavailable.", Toast.LENGTH_LONG).show()
             return
         }
+
+        if (isListening) {
+            Toast.makeText(context, "Already listening.", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        speechOutputManager.stop()
+        chatManager.clearErrorChats()
 
         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
@@ -70,30 +84,41 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // putExtra(RecognizerIntent.EXTRA_ENABLE_FORMATTING, RecognizerIntent.FORMATTING_OPTIMIZE_LATENCY)
                 // putExtra(RecognizerIntent.EXTRA_HIDE_PARTIAL_TRAILING_PUNCTUATION, true)
-            }
+            // }
         }
 
         speechRecognizer?.startListening(recognizerIntent)
 
+        isListening = true
         for (listener in listeners) {
             listener.onListeningStarted()
         }
     }
 
     override fun stop() {
-        speechRecognizer?.cancel()
+        text = null
         isStarted = null
         isFinished = null
-        text = null
         amplitude = null
         errorCode = null
+        isListening = false
+
+        for (listener in listeners) {
+            listener.onText(null)
+        }
+
+        speechRecognizer?.cancel()
     }
 
     override fun isAvailable(): Boolean {
         return SpeechRecognizer.isRecognitionAvailable(context)
+    }
+
+    override fun isListening(): Boolean {
+        return isListening
     }
 
     override fun addListener(listener: Listener) {
@@ -132,6 +157,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
 
     private fun onFinished() {
         isFinished = true
+        isListening = false
         for (listener in listeners) {
             listener.onSpeechFinished()
         }
@@ -153,6 +179,7 @@ class SpeechInputManager(private val context: Context) : ISpeechInputManager {
 
     private fun onError(code: Int) {
         errorCode = code
+        isListening = false
         for (listener in listeners) {
             listener.onError(code)
         }

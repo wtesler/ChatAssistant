@@ -4,9 +4,7 @@ import android.speech.SpeechRecognizer
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsAnimation
-import android.widget.Toast
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -23,12 +21,13 @@ fun SpeechInputSectionResolver() {
     val speechOutputManager = koinInject<ISpeechOutputManager>()
     val chatManager = koinInject<IChatManager>()
 
-    val context = LocalContext.current
     val view = LocalView.current
 
     var viewModel by remember { mutableStateOf(SpeechInputSectionViewModel()) }
     var chat by remember { mutableStateOf(ChatModel()) }
     val scope = rememberCoroutineScope()
+
+    val INITIAL_PROMPT = "Hi, how can I help?"
 
     fun setState(state: State) {
         viewModel = viewModel.copy(state = state)
@@ -55,11 +54,16 @@ fun SpeechInputSectionResolver() {
 
     val speechListener = remember {
         object : ISpeechInputManager.Listener {
+            override fun onListeningStarted() {
+                setState(State.ACTIVE)
+
+                val defaultMessage = if (chatManager.numChats() == 0) INITIAL_PROMPT else ""
+                chat = ChatModel(defaultMessage)
+                setText(defaultMessage)
+            }
+
             override fun onText(value: String?) {
-                if (value == null) {
-                    return
-                }
-                setText(value)
+                setText(value ?: "")
             }
 
             override fun onError(statusCode: Int?) {
@@ -67,24 +71,30 @@ fun SpeechInputSectionResolver() {
                     return
                 }
 
-                speechInputManager.stop()
+                if (speechInputManager.isListening()) {
+                    speechInputManager.stop()
+                }
 
+                chat = ChatModel()
                 chat.state = ChatModel.State.ERROR
                 when (statusCode) {
                     SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> {
                         chat.text = "Did not receive any speech."
                         chatManager.addChat(chat)
                         setState(State.READY)
+                        setText("")
                     }
                     SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
                         chat.text = "Enable Audio Permissions."
                         chatManager.addChat(chat)
                         setState(State.READY)
+                        setText("")
                     }
                     -1 -> {
                         chat.text = "Speech Recognition Unavailable."
                         chatManager.addChat(chat)
                         setState(State.READY)
+                        setText("")
                     }
                     SpeechRecognizer.ERROR_CLIENT -> {
                         val message = "Error. Status code $statusCode."
@@ -94,20 +104,20 @@ fun SpeechInputSectionResolver() {
                             chat.text = message
                             chatManager.addChat(chat)
                             setState(State.READY)
+                            setText("")
                         }
                     }
                     else -> {
                         chat.text = "Error. Status code $statusCode."
                         chatManager.addChat(chat)
                         setState(State.READY)
+                        setText("")
                     }
                 }
-
-                setText("")
             }
 
             override fun onSpeechFinished() {
-                if (viewModel.state != State.LOADING) {
+                if (viewModel.state != State.LOADING && viewModel.state != State.TEXT_INPUT) {
                     submitChat()
                 }
             }
@@ -140,31 +150,18 @@ fun SpeechInputSectionResolver() {
     }
 
     fun startSpeechInput() {
-        if (!speechInputManager.isAvailable()) {
-            setState(State.READY)
-            Toast.makeText(context, "Speech recognition unavailable.", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        setState(State.ACTIVE)
-
-        val defaultMessage = if (chatManager.numChats() == 0) "Hi, how can I help?" else ""
-        chat = ChatModel(defaultMessage)
-        setText(defaultMessage)
-
-        speechOutputManager.stop()
-        chatManager.clearErrorChats()
         speechInputManager.start()
     }
 
     fun onKeyboardClicked() {
         chatManager.clearErrorChats()
-        setText("")
         if (viewModel.state == State.TEXT_INPUT) {
+            setText("")
             setState(State.READY)
         } else {
+            val storedText = chat.text
             speechInputManager.stop()
-            chat = ChatModel("")
+            setText(if (storedText == INITIAL_PROMPT) "" else storedText)
             setState(State.TEXT_INPUT)
         }
     }

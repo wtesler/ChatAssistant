@@ -1,5 +1,8 @@
 package tesler.will.chatassistant._components.speechinput
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -111,7 +114,11 @@ fun SpeechInputSection(
             }
         }
 
-        if (isSpeaking) {
+        AnimatedVisibility(
+            visible = isSpeaking,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             Box(
                 modifier = Modifier
                     .wrapContentWidth()
@@ -130,7 +137,7 @@ fun SpeechInputSection(
 private fun SpeechInputSectionPreview() {
     Previews.Wrap(mainTestModule, true) {
         SpeechInputSection(
-            SpeechInputSectionViewModel(State.READY, "Hi, how can I help?", true),
+            SpeechInputSectionViewModel(State.ACTIVE, "Hi, how can I help?", true),
             {},
             {},
             {},

@@ -5,6 +5,7 @@ import android.database.ContentObserver
 import android.media.AudioManager
 import android.media.AudioManager.STREAM_MUSIC
 import android.os.Handler
+import android.os.Looper
 import android.provider.Settings.System.CONTENT_URI
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
@@ -19,7 +20,7 @@ import kotlin.math.ceil
 
 
 class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, OnInitListener,
-    ContentObserver(Handler(context.mainLooper)) {
+    ContentObserver(Handler(Looper.getMainLooper())) {
 
     private var tts: TextToSpeech? = null
     private var pendingText: String? = null
@@ -32,7 +33,8 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
 
     private val listeners = mutableListOf<Listener>()
 
-    private val speechListener: SpeechUtteranceListener = SpeechUtteranceListener(::checkIfSpeaking)
+    private val speechListener: SpeechUtteranceListener =
+        SpeechUtteranceListener(::onUtteranceStart, ::onUtteranceEnd)
 
     private var audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -216,18 +218,15 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         }
     }
 
-    private fun checkIfSpeaking() {
-        if (tts == null) {
-            return
+    private fun onUtteranceStart() {
+        for (listener in listeners) {
+            listener.onSpeechInProgress()
         }
-        if (tts!!.isSpeaking) {
-            for (listener in listeners) {
-                listener.onSpeechInProgress()
-            }
-        } else {
-            for (listener in listeners) {
-                listener.onSpeechEnded()
-            }
+    }
+
+    private fun onUtteranceEnd() {
+        for (listener in listeners) {
+            listener.onSpeechEnded()
         }
     }
 

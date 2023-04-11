@@ -1,5 +1,6 @@
 package tesler.will.chatassistant._components.speechinput.indicator
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -91,11 +92,17 @@ fun SpeechInputIndicatorDot(
 
     yOffset = if (isSpeechStarted) yOffset * 0.9f else animY.dp
 
+    var modifier = Modifier
+        .width(CIRCLE_LENGTH)
+        .height(CIRCLE_LENGTH * stretch)
+        .offset(0.dp, yOffset)
+
+    if (isSpeechStarted) {
+        modifier = modifier.animateContentSize()
+    }
+
     Box(
-        modifier = Modifier
-            .width(CIRCLE_LENGTH)
-            .height(CIRCLE_LENGTH * stretch)
-            .offset(0.dp, yOffset)
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier

@@ -2,17 +2,19 @@ package tesler.will.chatassistant.speechoutput.utterance
 
 import android.speech.tts.UtteranceProgressListener
 
-class SpeechUtteranceListener(val checkIfSpeaking: () -> Unit) : UtteranceProgressListener() {
+class SpeechUtteranceListener(val onUtteranceStart: () -> Unit, val onUtteranceEnd: () -> Unit) :
+    UtteranceProgressListener() {
+
     override fun onStart(utteranceId: String?) {
-        checkIfSpeaking()
+        onUtteranceStart()
     }
 
     override fun onDone(utteranceId: String?) {
-        checkIfSpeaking()
+        onUtteranceEnd()
     }
 
     @Deprecated("Deprecated in Java")
     override fun onError(utteranceId: String?) {
-        checkIfSpeaking()
+        onUtteranceEnd()
     }
 }

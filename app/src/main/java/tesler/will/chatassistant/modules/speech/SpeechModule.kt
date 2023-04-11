@@ -8,7 +8,7 @@ import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 import tesler.will.chatassistant.speechoutput.SpeechOutputManager
 
 val speechModule = module {
-    single<ISpeechInputManager> { SpeechInputManager(androidContext()) }
+    single<ISpeechInputManager> { SpeechInputManager(androidContext(), get(), get()) }
     single<ISpeechOutputManager> { SpeechOutputManager(androidContext()) }
 
 }
