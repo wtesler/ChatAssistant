@@ -59,6 +59,11 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     }
 
     override fun destroy() {
+        if (tts != null && tts!!.isSpeaking) {
+            for (listener in listeners) {
+                listener.onSpeechEnded()
+            }
+        }
         tts?.setOnUtteranceProgressListener(null)
         tts?.shutdown()
         tts = null
@@ -71,6 +76,11 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     }
 
     override fun stop() {
+        if (tts != null && tts!!.isSpeaking) {
+            for (listener in listeners) {
+                listener.onSpeechEnded()
+            }
+        }
         tts?.stop()
         pendingText = null
         queuedSpeech = ""
