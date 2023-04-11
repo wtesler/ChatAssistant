@@ -6,7 +6,6 @@ interface ISettingsService {
     fun observeSettings(): Flow<Settings>
     suspend fun currentSettings(): Settings
 
-    suspend fun updateIsMute(isMute: Boolean)
     suspend fun updateVoice(voice: String)
     suspend fun updateSpeed(speed: Float)
 }
