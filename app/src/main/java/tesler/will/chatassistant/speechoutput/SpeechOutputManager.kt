@@ -64,6 +64,9 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
                 listener.onSpeechEnded()
             }
         }
+        if (isMute) {
+            setVolume(mediaVolume)
+        }
         tts?.setOnUtteranceProgressListener(null)
         tts?.shutdown()
         tts = null
@@ -72,6 +75,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         queuedSpeech = ""
         voiceString = null
         speedFloat = null
+        isMute = false
         context.contentResolver.unregisterContentObserver(this)
     }
 
@@ -84,6 +88,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         tts?.stop()
         pendingText = null
         queuedSpeech = ""
+        isMute = false
     }
 
     override fun addListener(listener: Listener) {
@@ -137,16 +142,11 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
 
         var unmutedVolume = mediaVolume
         if (unmutedVolume == 0) {
-            unmutedVolume = ceil(audioManager.getStreamMaxVolume(STREAM_MUSIC) / 4.0).toInt()
+            unmutedVolume = ceil(audioManager.getStreamMaxVolume(STREAM_MUSIC) / 2.0).toInt()
         }
 
         val volume = if (isMuted) 0 else unmutedVolume
-
-        try {
-            audioManager.setStreamVolume(STREAM_MUSIC, volume, 0)
-        } catch (e: SecurityException) {
-            Log.w("Speech Output Manager", "Cannot violate DnD")
-        }
+        setVolume(volume)
     }
 
     override fun getDefaultVoice(): Voice {
@@ -228,6 +228,14 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
             for (listener in listeners) {
                 listener.onSpeechEnded()
             }
+        }
+    }
+
+    private fun setVolume(volume: Int) {
+        try {
+            audioManager.setStreamVolume(STREAM_MUSIC, volume, 0)
+        } catch (e: SecurityException) {
+            Log.w("Speech Output Manager", "Cannot violate DnD")
         }
     }
 

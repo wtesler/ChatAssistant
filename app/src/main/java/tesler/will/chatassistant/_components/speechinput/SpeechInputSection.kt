@@ -30,6 +30,7 @@ fun SpeechInputSection(
 ) {
     val state = viewModel.state
     val text = viewModel.text
+    val isSpeaking = viewModel.isSpeaking
 
     Box(
         modifier = Modifier
@@ -110,7 +111,7 @@ fun SpeechInputSection(
             }
         }
 
-        if (viewModel.isSpeaking) {
+        if (isSpeaking) {
             Box(
                 modifier = Modifier
                     .wrapContentWidth()
