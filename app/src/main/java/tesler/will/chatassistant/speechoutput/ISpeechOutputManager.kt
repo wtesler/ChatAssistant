@@ -18,6 +18,7 @@ interface ISpeechOutputManager {
 
     interface Listener {
         fun onTtsReady() = run { }
-        fun onSpeechProgress(progress: Float) = run { }
+        fun onSpeechInProgress() = run { }
+        fun onSpeechEnded() = run { }
     }
 }

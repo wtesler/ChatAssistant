@@ -39,6 +39,10 @@ fun SpeechInputSectionResolver() {
         viewModel = viewModel.copy(text = text)
     }
 
+    fun setIsSpeaking(isSpeaking: Boolean) {
+        viewModel = viewModel.copy(isSpeaking = isSpeaking)
+    }
+
     fun submitChat() {
         if (chat.text.isBlank()) {
             return
@@ -106,6 +110,18 @@ fun SpeechInputSectionResolver() {
                 if (viewModel.state != State.LOADING) {
                     submitChat()
                 }
+            }
+        }
+    }
+
+    val speechOutputListener = remember {
+        object : ISpeechOutputManager.Listener {
+            override fun onSpeechInProgress() {
+                setIsSpeaking(true)
+            }
+
+            override fun onSpeechEnded() {
+                setIsSpeaking(false)
             }
         }
     }
@@ -188,12 +204,15 @@ fun SpeechInputSectionResolver() {
     DisposableEffect(Unit) {
         chatManager.addListener(chatListener)
         speechInputManager.addListener(speechListener)
+        speechOutputManager.addListener(speechOutputListener)
         view.setWindowInsetsAnimationCallback(insetListener)
         speechInputManager.init()
         startSpeechInput()
 
         onDispose {
             chatManager.removeListener(chatListener)
+            speechInputManager.removeListener(speechListener)
+            speechOutputManager.removeListener(speechOutputListener)
             view.setWindowInsetsAnimationCallback(null)
             speechInputManager.destroy()
         }

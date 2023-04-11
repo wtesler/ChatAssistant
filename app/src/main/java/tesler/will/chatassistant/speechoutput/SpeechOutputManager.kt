@@ -1,16 +1,25 @@
 package tesler.will.chatassistant.speechoutput
 
 import android.content.Context
+import android.database.ContentObserver
+import android.media.AudioManager
+import android.media.AudioManager.STREAM_MUSIC
+import android.os.Handler
+import android.provider.Settings.System.CONTENT_URI
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
 import android.speech.tts.Voice
 import android.util.Log
 import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.Listener
+import tesler.will.chatassistant.speechoutput.utterance.SpeechUtteranceListener
 import java.util.*
+import kotlin.math.ceil
 
 
-class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, OnInitListener {
+class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, OnInitListener,
+    ContentObserver(Handler(context.mainLooper)) {
 
     private var tts: TextToSpeech? = null
     private var pendingText: String? = null
@@ -19,8 +28,13 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     private var isMute = false
     private var voiceString: String? = null
     private var speedFloat: Float? = null
+    private var mediaVolume: Int = 0
 
     private val listeners = mutableListOf<Listener>()
+
+    private val speechListener: SpeechUtteranceListener = SpeechUtteranceListener(::checkIfSpeaking)
+
+    private var audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     override fun init(voice: String?, speed: Float?) {
         voiceString = voice
@@ -30,6 +44,11 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         } else {
             Log.w("Speech Output", "TTS already started")
         }
+
+        mediaVolume = audioManager.getStreamVolume(STREAM_MUSIC)
+
+        context.contentResolver.registerContentObserver(CONTENT_URI, true, this)
+        tts!!.setOnUtteranceProgressListener(speechListener)
     }
 
     override fun isInit(): Boolean {
@@ -40,6 +59,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     }
 
     override fun destroy() {
+        tts?.setOnUtteranceProgressListener(null)
         tts?.shutdown()
         tts = null
         pendingText = null
@@ -47,6 +67,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         queuedSpeech = ""
         voiceString = null
         speedFloat = null
+        context.contentResolver.unregisterContentObserver(this)
     }
 
     override fun stop() {
@@ -103,8 +124,18 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
 
     override fun setMuted(isMuted: Boolean) {
         isMute = isMuted
-        if (isMute) {
-            stop()
+
+        var unmutedVolume = mediaVolume
+        if (unmutedVolume == 0) {
+            unmutedVolume = ceil(audioManager.getStreamMaxVolume(STREAM_MUSIC) / 4.0).toInt()
+        }
+
+        val volume = if (isMuted) 0 else unmutedVolume
+
+        try {
+            audioManager.setStreamVolume(STREAM_MUSIC, volume, 0)
+        } catch (e: SecurityException) {
+            Log.w("Speech Output Manager", "Cannot violate DnD")
         }
     }
 
@@ -148,21 +179,45 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
                 listener.onTtsReady()
             }
         } else {
-            Toast.makeText(context, "Failed to start text-to-speech", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Failed to start text-to-speech", LENGTH_LONG).show()
+        }
+    }
+
+    override fun onChange(selfChange: Boolean) {
+        val currentVolume = audioManager.getStreamVolume(STREAM_MUSIC)
+        if (!isMute) {
+            mediaVolume = currentVolume
+        } else {
+            if (currentVolume > 0) {
+                setMuted(false)
+            }
         }
     }
 
     private fun speakInternal(text: String?) {
-        if (isMute) {
-            return
-        }
-
         if (tts == null || !hasInit) {
             throw Exception("Must call `start` and wait for init before trying to speak.")
         }
         if (text != null) {
+            // val bundle: Bundle = Bundle()
+            // bundle.putFloat(Engine.KEY_PARAM_VOLUME, if (isMute) 0f else 1f)
             val utteranceId = UUID.randomUUID().toString()
             tts?.speak(text, TextToSpeech.QUEUE_ADD, null, utteranceId)
+        }
+    }
+
+    private fun checkIfSpeaking() {
+        if (tts == null) {
+            return
+        }
+        if (tts!!.isSpeaking) {
+            for (listener in listeners) {
+                listener.onSpeechInProgress()
+            }
+        } else {
+            for (listener in listeners) {
+                listener.onSpeechEnded()
+            }
         }
     }
 

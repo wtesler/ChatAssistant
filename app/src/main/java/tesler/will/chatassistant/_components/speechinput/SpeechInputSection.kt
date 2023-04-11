@@ -11,6 +11,7 @@ import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.speechinput.indicator.SpeechInputIndicator
 import tesler.will.chatassistant._components.speechinput.loading.SpeechSubmitLoading
+import tesler.will.chatassistant._components.speechinput.mutebutton.MuteButtonResolver
 import tesler.will.chatassistant._components.speechinput.settingsbutton.SettingsButtonResolver
 import tesler.will.chatassistant._components.speechinput.startbutton.SpeechInputStartButton
 import tesler.will.chatassistant._components.speechinput.textinput.SpeechInputTextField
@@ -108,6 +109,18 @@ fun SpeechInputSection(
                 TypeButton(modifier = Modifier, R.drawable.keyboard, onKeyboardClicked)
             }
         }
+
+        if (viewModel.isSpeaking) {
+            Box(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.TopStart)
+                    .padding(AppTheme.dimens.medium)
+            ) {
+                MuteButtonResolver(modifier = Modifier)
+            }
+        }
     }
 }
 
@@ -116,7 +129,7 @@ fun SpeechInputSection(
 private fun SpeechInputSectionPreview() {
     Previews.Wrap(mainTestModule, true) {
         SpeechInputSection(
-            SpeechInputSectionViewModel(State.TEXT_INPUT, "Hi, how can I help?"),
+            SpeechInputSectionViewModel(State.READY, "Hi, how can I help?", true),
             {},
             {},
             {},
