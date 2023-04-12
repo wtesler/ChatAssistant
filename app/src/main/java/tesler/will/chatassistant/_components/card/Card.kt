@@ -53,6 +53,7 @@ fun Card(defaultVisible: Boolean = false) {
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .background(AppTheme.colors.background)
+                    .navigationBarsPadding()
                     .imePadding(),
                 verticalArrangement = Arrangement.Bottom
             ) {

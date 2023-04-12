@@ -43,7 +43,7 @@ fun TypeButton(
                     onClick = onClick
                 ),
             painter = painterResource(id = id),
-            contentDescription = "Keyboard Button",
+            contentDescription = "Type Button",
             colorFilter = tint(AppTheme.colors.iconPrimary)
         )
     }
