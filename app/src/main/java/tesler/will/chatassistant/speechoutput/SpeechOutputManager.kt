@@ -107,6 +107,10 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         speakInternal(text, queueType)
     }
 
+    override fun isSpeaking(): Boolean {
+        return tts != null && tts!!.isSpeaking
+    }
+
     override fun queueSpeech(text: String) {
         queuedSpeech += text
 

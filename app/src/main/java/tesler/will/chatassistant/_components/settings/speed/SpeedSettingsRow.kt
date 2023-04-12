@@ -11,7 +11,7 @@ import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.settings.SettingsOption
 import tesler.will.chatassistant._components.settings.SettingsRow
 import tesler.will.chatassistant._components.settings.voice.VoiceOption
-import tesler.will.chatassistant.modules.settings.settingsTestModule
+import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
@@ -46,7 +46,7 @@ fun <T : SettingsOption> SpeedSettingsRow(
 @Preview
 @Composable
 private fun SpeedSettingsRowPreview() {
-    Previews.Wrap(settingsTestModule, false) {
+    Previews.Wrap(mainTestModule, false) {
         SpeedSettingsRow(
             listOf(
                 VoiceOption("name1", "displayName1")

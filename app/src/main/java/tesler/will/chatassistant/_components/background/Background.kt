@@ -23,7 +23,7 @@ fun Background(activity: Activity?, content: @Composable () -> Unit) {
             .background(AppTheme.colors.underlay)
             .statusBarsPadding()
             .noRippleClickable {
-                activity?.finishAndRemoveTask()
+                activity?.finish()
             },
         contentAlignment = Alignment.BottomCenter,
     ) {

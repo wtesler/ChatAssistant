@@ -203,7 +203,6 @@ fun SpeechInputSectionResolver() {
         speechInputManager.addListener(speechListener)
         speechOutputManager.addListener(speechOutputListener)
         view.setWindowInsetsAnimationCallback(insetListener)
-        speechInputManager.init()
         startSpeechInput()
 
         onDispose {
@@ -211,7 +210,6 @@ fun SpeechInputSectionResolver() {
             speechInputManager.removeListener(speechListener)
             speechOutputManager.removeListener(speechOutputListener)
             view.setWindowInsetsAnimationCallback(null)
-            speechInputManager.destroy()
         }
     }
 

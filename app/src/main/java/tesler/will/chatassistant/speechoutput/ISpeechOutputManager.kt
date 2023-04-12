@@ -11,6 +11,7 @@ interface ISpeechOutputManager {
     fun removeListener(listener: Listener)
     fun queueSpeech(text: String)
     fun speak(text: String, queueType: Int)
+    fun isSpeaking(): Boolean
     fun flushSpeech()
     fun setMuted(isMuted: Boolean)
     fun getDefaultVoice(): Voice

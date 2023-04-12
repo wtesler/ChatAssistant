@@ -29,6 +29,10 @@ class EmptySpeechOutputManager : ISpeechOutputManager {
     override fun speak(text: String, queueType: Int) {
     }
 
+    override fun isSpeaking(): Boolean {
+        return false
+    }
+
     override fun flushSpeech() {
     }
 

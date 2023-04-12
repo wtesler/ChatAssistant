@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.settings.SettingsOption
-import tesler.will.chatassistant.modules.settings.settingsTestModule
+import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 import tesler.will.chatassistant.store.ISettingsService
 import java.util.*
@@ -114,7 +114,7 @@ fun VoiceSettingRowResolver() {
 @Preview
 @Composable
 private fun VoiceSettingRowResolverPreview() {
-    Previews.Wrap(settingsTestModule, false) {
+    Previews.Wrap(mainTestModule, false) {
         VoiceSettingRowResolver()
     }
 }

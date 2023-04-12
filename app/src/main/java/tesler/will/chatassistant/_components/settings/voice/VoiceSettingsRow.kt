@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.settings.SettingsOption
 import tesler.will.chatassistant._components.settings.SettingsRow
-import tesler.will.chatassistant.modules.settings.settingsTestModule
+import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.theme.AppTheme
 
 @Composable
@@ -61,7 +61,7 @@ fun <T : SettingsOption> VoiceSettingsRow(
 @Preview
 @Composable
 private fun VoiceSettingsRowPreview() {
-    Previews.Wrap(settingsTestModule, false) {
+    Previews.Wrap(mainTestModule, false) {
         VoiceSettingsRow(
             listOf(
                 VoiceOption("name1", "displayName1")
