@@ -2,7 +2,7 @@ package tesler.will.chatassistant.activities
 
 import android.os.Bundle
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import tesler.will.chatassistant._components.Main
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         }
 
         window.setLayout(MATCH_PARENT, MATCH_PARENT)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.addFlags(FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onStop() {

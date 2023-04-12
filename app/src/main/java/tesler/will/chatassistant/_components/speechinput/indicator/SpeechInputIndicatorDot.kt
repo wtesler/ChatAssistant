@@ -1,18 +1,20 @@
 package tesler.will.chatassistant._components.speechinput.indicator
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.math.MathUtils
 import org.koin.compose.koinInject
-import tesler.will.chatassistant.modules.speech.speechTestModule
 import tesler.will.chatassistant._components.preview.Previews
+import tesler.will.chatassistant.modules.speech.speechTestModule
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.theme.AppTheme
 import kotlin.math.pow
@@ -92,22 +94,15 @@ fun SpeechInputIndicatorDot(
 
     yOffset = if (isSpeechStarted) yOffset * 0.9f else animY.dp
 
-    var modifier = Modifier
-        .width(CIRCLE_LENGTH)
-        .height(CIRCLE_LENGTH * stretch)
-        .offset(0.dp, yOffset)
-
-    if (isSpeechStarted) {
-        modifier = modifier.animateContentSize()
-    }
-
     Box(
-        modifier = modifier
+        modifier = Modifier
+            .offset(0.dp, yOffset)
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(COLOR, CircleShape)
+                .width(CIRCLE_LENGTH)
+                .height(CIRCLE_LENGTH * stretch)
+                .background(COLOR, RoundedCornerShape(CIRCLE_LENGTH))
         )
     }
 }
