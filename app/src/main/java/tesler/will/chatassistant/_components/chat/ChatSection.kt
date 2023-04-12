@@ -115,7 +115,6 @@ fun ChatSection() {
             }
 
             override fun onChatSubmitResponseStarted() {
-                speechOutputManager.reset()
                 hasManuallyInterfered = false
             }
 
@@ -148,19 +147,32 @@ fun ChatSection() {
         }
     }
 
-    DisposableEffect(Unit) {
-        chatManager.addListener(chatListener)
-        speechInputManager.addListener(speechInputListener)
+    val speechOutputListener = remember {
+        object : ISpeechOutputManager.Listener {
+            override fun onTtsReady() {
+                coroutineScope.launch {
+                    settingsService.observeSettings().collect { settings ->
+                        val voice = settings.voice
+                        val speed = settings.speed
 
-        coroutineScope.launch {
-            settingsService.observeSettings().collect { settings ->
-                if (!speechOutputManager.isInit()) {
-                    val voice = settings.voice
-                    val speed = settings.speed
-                    speechOutputManager.init(voice, speed)
+                        if (voice != null) {
+                            speechOutputManager.setVoice(voice)
+                        }
+                        if (speed != null) {
+                            speechOutputManager.setSpeed(speed)
+                        }
+                    }
                 }
             }
         }
+    }
+
+    DisposableEffect(Unit) {
+        chatManager.addListener(chatListener)
+        speechInputManager.addListener(speechInputListener)
+        speechOutputManager.addListener(speechOutputListener)
+
+        speechOutputManager.init()
 
         for (chat in chatManager.getChats()) {
             chats.add(chat)
@@ -169,6 +181,7 @@ fun ChatSection() {
         onDispose {
             chatManager.removeListener(chatListener)
             speechInputManager.removeListener(speechInputListener)
+            speechOutputManager.removeListener(speechOutputListener)
             speechOutputManager.destroy()
         }
     }

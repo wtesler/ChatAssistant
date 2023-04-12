@@ -1,5 +1,6 @@
 package tesler.will.chatassistant._components.settings.voice
 
+import android.speech.tts.TextToSpeech.QUEUE_FLUSH
 import android.speech.tts.Voice
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
@@ -7,7 +8,6 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.settings.SettingsOption
-import tesler.will.chatassistant._components.settings.SettingsRow
 import tesler.will.chatassistant.modules.settings.settingsTestModule
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 import tesler.will.chatassistant.store.ISettingsService
@@ -16,7 +16,7 @@ import java.util.*
 data class VoiceOption(val name: String, val display: String) : SettingsOption(display)
 
 @Composable
-fun VoiceSetting() {
+fun VoiceSettingRowResolver() {
     val settingsService = koinInject<ISettingsService>()
     val speechOutputManager = koinInject<ISpeechOutputManager>()
 
@@ -104,15 +104,17 @@ fun VoiceSetting() {
             settingsService.updateVoice(option.name)
         }
         selectedOption = option
+        speechOutputManager.setVoice(option.name)
+        speechOutputManager.speak("This is what my voice will sound like.", QUEUE_FLUSH)
     }
 
-    SettingsRow(title = "Voice:", options = options, selected = selectedOption, ::onOptionSelected)
+    VoiceSettingsRow(options = options, selected = selectedOption, ::onOptionSelected)
 }
 
 @Preview
 @Composable
-private fun VoiceSettingPreview() {
+private fun VoiceSettingRowResolverPreview() {
     Previews.Wrap(settingsTestModule, false) {
-        VoiceSetting()
+        VoiceSettingRowResolver()
     }
 }

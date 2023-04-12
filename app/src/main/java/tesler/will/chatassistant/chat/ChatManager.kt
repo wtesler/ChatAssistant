@@ -104,8 +104,11 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
         }
 
         submitJob = scope.launch {
-            val chatsCopy = ArrayList(chats)
+            var chatsCopy = ArrayList(chats)
             chatsCopy.add(chatModel)
+            if (chatsCopy.size > 20) {
+                chatsCopy = chatsCopy.subList(0, 20) as ArrayList<ChatModel>
+            }
 
             val inputText = chatModel.text
             val inputChat = chatModel.copy(text = "")

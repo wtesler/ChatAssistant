@@ -8,7 +8,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
@@ -30,9 +29,13 @@ fun <T : SettingsOption> SettingsRow(
     title: String,
     options: List<T>,
     selected: T,
-    onOptionSelect: (T) -> Unit
+    content: @Composable (T, (Boolean) -> Unit) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+
+    fun setExpanded(expanded: Boolean) {
+        isExpanded = expanded
+    }
 
     Row(
         modifier = Modifier
@@ -81,23 +84,8 @@ fun <T : SettingsOption> SettingsRow(
                 onDismissRequest = { isExpanded = false },
                 offset = DpOffset(0.dp, 5.dp)
             ) {
-                for (i in options.indices) {
-                    val option = options[i]
-                    DropdownMenuItem(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            onOptionSelect(option)
-                            isExpanded = false
-                        },
-                        content = {
-                            Text(
-                                text = (option.displayName),
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier.fillMaxWidth(),
-                                style = AppTheme.type.body1
-                            )
-                        }
-                    )
+                for (option in options) {
+                    content(option, ::setExpanded)
                 }
             }
         }
@@ -113,6 +101,6 @@ private fun SettingsRowPreview() {
             listOf(
                 VoiceOption("name1", "displayName1")
             ), VoiceOption("defaultName", "defaultDisplayName")
-        ) {}
+        ) { _, _ -> }
     }
 }

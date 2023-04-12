@@ -4,14 +4,11 @@ import android.speech.tts.Voice
 import java.util.Locale
 
 class EmptySpeechOutputManager : ISpeechOutputManager {
-    override fun init(voice: String?, speed: Float?) {
+    override fun init() {
     }
 
     override fun isInit(): Boolean {
         return false
-    }
-
-    override fun reset() {
     }
 
     override fun destroy() {
@@ -29,6 +26,9 @@ class EmptySpeechOutputManager : ISpeechOutputManager {
     override fun queueSpeech(text: String) {
     }
 
+    override fun speak(text: String, queueType: Int) {
+    }
+
     override fun flushSpeech() {
     }
 
@@ -41,5 +41,11 @@ class EmptySpeechOutputManager : ISpeechOutputManager {
 
     override fun getVoices(): MutableSet<Voice> {
         return mutableSetOf()
+    }
+
+    override fun setVoice(voice: String) {
+    }
+
+    override fun setSpeed(speed: Float) {
     }
 }

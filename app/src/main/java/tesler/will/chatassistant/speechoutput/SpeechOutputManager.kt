@@ -9,6 +9,7 @@ import android.os.Looper
 import android.provider.Settings.System.CONTENT_URI
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
+import android.speech.tts.TextToSpeech.QUEUE_ADD
 import android.speech.tts.Voice
 import android.util.Log
 import android.widget.Toast
@@ -38,9 +39,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
 
     private var audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-    override fun init(voice: String?, speed: Float?) {
-        voiceString = voice
-        speedFloat = speed
+    override fun init() {
         if (tts == null) {
             tts = TextToSpeech(context, this)
         } else {
@@ -55,9 +54,6 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
 
     override fun isInit(): Boolean {
         return hasInit
-    }
-
-    override fun reset() {
     }
 
     override fun destroy() {
@@ -102,6 +98,13 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
 
     override fun removeListener(listener: Listener) {
         listeners.remove(listener)
+    }
+
+    override fun speak(text: String, queueType: Int) {
+        if (!hasInit) {
+            return
+        }
+        speakInternal(text, queueType)
     }
 
     override fun queueSpeech(text: String) {
@@ -169,20 +172,6 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         if (status == TextToSpeech.SUCCESS) {
             hasInit = true
 
-            if (voiceString != null) {
-                val voices = getVoices()
-                for (voice in voices) {
-                    if (voice.name == voiceString) {
-                        tts!!.voice = voice
-                        break
-                    }
-                }
-            }
-
-            if (speedFloat != null) {
-                tts!!.setSpeechRate(speedFloat!!)
-            }
-
             if (pendingText != null) {
                 speakInternal(pendingText)
                 pendingText = null
@@ -193,6 +182,21 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         } else {
             Toast.makeText(context, "Failed to start text-to-speech", LENGTH_LONG).show()
         }
+    }
+
+    override fun setVoice(voice: String) {
+        val voices = getVoices()
+        for (v in voices) {
+            if (v.name == voice) {
+                tts!!.voice = v
+                break
+            }
+        }
+    }
+
+    override fun setSpeed(speed: Float) {
+        speedFloat = speed
+        tts!!.setSpeechRate(speed)
     }
 
     override fun onChange(selfChange: Boolean) {
@@ -206,7 +210,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         }
     }
 
-    private fun speakInternal(text: String?) {
+    private fun speakInternal(text: String?, queueType: Int = QUEUE_ADD) {
         if (tts == null || !hasInit) {
             throw Exception("Must call `start` and wait for init before trying to speak.")
         }
@@ -214,7 +218,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
             // val bundle: Bundle = Bundle()
             // bundle.putFloat(Engine.KEY_PARAM_VOLUME, if (isMute) 0f else 1f)
             val utteranceId = UUID.randomUUID().toString()
-            tts?.speak(text, TextToSpeech.QUEUE_ADD, null, utteranceId)
+            tts?.speak(text, queueType, null, utteranceId)
         }
     }
 
