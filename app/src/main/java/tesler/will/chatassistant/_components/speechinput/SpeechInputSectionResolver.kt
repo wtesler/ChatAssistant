@@ -49,6 +49,7 @@ fun SpeechInputSectionResolver() {
         setState(State.LOADING)
         val chatToSubmit = chat.copy(state = ChatModel.State.CREATED)
         chatManager.clearErrorChats()
+        speechOutputManager.stop()
         chatManager.submitChat(chatToSubmit, scope)
     }
 
@@ -150,6 +151,7 @@ fun SpeechInputSectionResolver() {
     }
 
     fun startSpeechInput() {
+        speechOutputManager.stop()
         speechInputManager.start()
     }
 
@@ -161,6 +163,7 @@ fun SpeechInputSectionResolver() {
         } else {
             val storedText = chat.text
             speechInputManager.stop()
+            chat = ChatModel()
             setText(if (storedText == INITIAL_PROMPT) "" else storedText)
             setState(State.TEXT_INPUT)
         }

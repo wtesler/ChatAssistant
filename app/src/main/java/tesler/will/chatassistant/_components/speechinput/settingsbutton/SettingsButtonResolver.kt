@@ -26,6 +26,7 @@ fun SettingsButtonResolver(modifier: Modifier) {
         if (speechInputManager.isListening()) {
             speechInputManager.stop()
         } else {
+            speechOutputManager.stop()
             speechInputManager.start()
         }
         isExpanded = false

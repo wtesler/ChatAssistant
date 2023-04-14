@@ -8,11 +8,9 @@ import android.widget.Toast
 import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.speechinput.ISpeechInputManager.Listener
 import tesler.will.chatassistant.speechinput.listener.SpeechListener
-import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 
 class SpeechInputManager(
     private val context: Context,
-    private val speechOutputManager: ISpeechOutputManager,
     private val chatManager: IChatManager
 ) : ISpeechInputManager {
 
@@ -71,7 +69,6 @@ class SpeechInputManager(
             return
         }
 
-        speechOutputManager.stop()
         chatManager.clearErrorChats()
 
         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
