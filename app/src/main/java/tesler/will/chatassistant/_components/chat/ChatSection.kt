@@ -1,10 +1,7 @@
 package tesler.will.chatassistant._components.chat
 
 import androidx.compose.foundation.MutatePriority
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.gestures.stopScroll
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -169,6 +166,12 @@ fun ChatSection() {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .pointerInput("scroll") {
+                    detectVerticalDragGestures(
+                        onDragStart = { preventAutoScroll() },
+                        onVerticalDrag = {_, _ -> preventAutoScroll() }
+                    )
+                }
                 .pointerInput("tap_input") {
                     detectTapGestures(
                         onPress = { preventAutoScroll() },
@@ -213,7 +216,7 @@ fun ChatSection() {
             )
         }
 
-        if (chats.any {x -> x.text.isNotBlank()}) {
+        if (chats.any { x -> x.text.isNotBlank() }) {
             ElevationShadow(Modifier.align(Alignment.BottomCenter))
         }
     }

@@ -12,7 +12,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun SpeechInputIndicator() {
-    val SPACING = 10.dp
+    val SPACING = 9.dp
     val DURATION_MS = 1500
     val WOBBLE_DISTANCE = 2f
 
