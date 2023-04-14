@@ -107,7 +107,8 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
             var chatsCopy = ArrayList(chats)
             chatsCopy.add(chatModel)
             if (chatsCopy.size > 20) {
-                chatsCopy = chatsCopy.subList(0, 20) as ArrayList<ChatModel>
+                chatsCopy =
+                    chatsCopy.subList(chatsCopy.size - 20, chatsCopy.size) as ArrayList<ChatModel>
             }
 
             val inputText = chatModel.text
