@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.chat.ChatModel
+import tesler.will.chatassistant.chat.ChatModel.State.CREATED
 import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
@@ -24,7 +25,7 @@ fun SpeechInputSectionResolver() {
     val view = LocalView.current
 
     var viewModel by remember { mutableStateOf(SpeechInputSectionViewModel()) }
-    var chat by remember { mutableStateOf(ChatModel()) }
+    val chat by remember { mutableStateOf(ChatModel()) }
     val scope = rememberCoroutineScope()
 
     val INITIAL_PROMPT = "Hi, how can I help?"
@@ -47,9 +48,9 @@ fun SpeechInputSectionResolver() {
             return
         }
         setState(State.LOADING)
-        val chatToSubmit = chat.copy(state = ChatModel.State.CREATED)
         chatManager.clearErrorChats()
         speechOutputManager.stop()
+        val chatToSubmit = chat.copy(state = CREATED)
         chatManager.submitChat(chatToSubmit, scope)
     }
 
@@ -59,7 +60,6 @@ fun SpeechInputSectionResolver() {
                 setState(State.ACTIVE)
 
                 val defaultMessage = if (chatManager.numChats() == 0) INITIAL_PROMPT else ""
-                chat = ChatModel(defaultMessage)
                 setText(defaultMessage)
             }
 
@@ -76,8 +76,8 @@ fun SpeechInputSectionResolver() {
                     speechInputManager.stop()
                 }
 
-                chat = ChatModel()
                 chat.state = ChatModel.State.ERROR
+
                 when (statusCode) {
                     SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> {
                         chat.text = "Did not receive any speech."
@@ -163,7 +163,6 @@ fun SpeechInputSectionResolver() {
         } else {
             val storedText = chat.text
             speechInputManager.stop()
-            chat = ChatModel()
             setText(if (storedText == INITIAL_PROMPT) "" else storedText)
             setState(State.TEXT_INPUT)
         }

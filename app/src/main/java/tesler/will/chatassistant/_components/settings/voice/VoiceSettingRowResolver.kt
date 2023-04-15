@@ -45,7 +45,7 @@ fun VoiceSettingRowResolver() {
 
     val speechOutputListener = remember {
         object : ISpeechOutputManager.Listener {
-            override fun onTtsReady() {
+            override fun onTtsReady(chunk: ISpeechOutputManager.SpeechChunk?) {
                 val defaultVoice = speechOutputManager.getDefaultVoice()
                 selectedOption = toVoiceOption(defaultVoice)
 

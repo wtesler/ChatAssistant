@@ -12,8 +12,8 @@ android {
         applicationId "tesler.will.chatassistant"
         minSdk 30
         targetSdk 33
-        versionCode 22
-        versionName "22"
+        versionCode 23
+        versionName "23"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -72,13 +72,11 @@ dependencies {
 
     // Used for Markdown support
     final def markwon_version = '4.6.2'
-    implementation("io.coil-kt:coil:2.3.0")
     implementation "io.noties.markwon:core:$markwon_version"
     implementation "io.noties.markwon:ext-strikethrough:$markwon_version"
     implementation "io.noties.markwon:ext-tables:$markwon_version"
     implementation "io.noties.markwon:html:$markwon_version"
     implementation "io.noties.markwon:linkify:$markwon_version"
-    implementation "com.github.jeziellago:Markwon:58aa5aba6a"
 
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"

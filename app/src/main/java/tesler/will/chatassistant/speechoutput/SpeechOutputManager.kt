@@ -15,6 +15,7 @@ import android.util.Log
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.Listener
+import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.SpeechChunk
 import tesler.will.chatassistant.speechoutput.utterance.SpeechUtteranceListener
 import java.util.*
 import kotlin.math.ceil
@@ -35,7 +36,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     private val listeners = mutableListOf<Listener>()
 
     private val speechListener: SpeechUtteranceListener =
-        SpeechUtteranceListener(::onUtteranceStart, ::onUtteranceEnd)
+        SpeechUtteranceListener(::onUtteranceStart, ::onUtteranceEnd, ::onUtteranceProgress)
 
     private var audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -92,7 +93,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     override fun addListener(listener: Listener) {
         listeners.add(listener)
         if (hasInit) {
-            listener.onTtsReady()
+            listener.onTtsReady(null)
         }
     }
 
@@ -111,39 +112,42 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         return tts != null && tts!!.isSpeaking
     }
 
-    override fun queueSpeech(text: String) {
+    override fun queueSpeech(text: String): SpeechChunk? {
         queuedSpeech += text
 
         if (!hasInit) {
-            return
+            return null
         }
 
         if (tts!!.isSpeaking) {
-            return
+            return null
         }
 
         val lastStopCharIndex = findLastStopCharIndex()
 
         if (lastStopCharIndex <= 0) {
-            return
+            return null
         }
 
         val speechEndIndex = lastStopCharIndex + 1
 
         val speech = queuedSpeech.substring(0, speechEndIndex)
 
-        speakInternal(speech)
+        val speechChunk = speakInternal(speech)
 
         if (lastStopCharIndex < queuedSpeech.length - 1) {
             queuedSpeech = queuedSpeech.substring(speechEndIndex, queuedSpeech.length)
         } else {
             queuedSpeech = ""
         }
+
+        return speechChunk
     }
 
-    override fun flushSpeech() {
-        speakInternal(queuedSpeech)
+    override fun flushSpeech(): SpeechChunk {
+        val speechChunk = speakInternal(queuedSpeech)
         queuedSpeech = ""
+        return speechChunk
     }
 
     override fun setMuted(isMuted: Boolean) {
@@ -175,13 +179,13 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             hasInit = true
-
+            var speechChunk: SpeechChunk? = null
             if (pendingText != null) {
-                speakInternal(pendingText)
+                speechChunk = speakInternal(pendingText!!)
                 pendingText = null
             }
             for (listener in listeners) {
-                listener.onTtsReady()
+                listener.onTtsReady(speechChunk)
             }
         } else {
             Toast.makeText(context, "Failed to start text-to-speech", LENGTH_LONG).show()
@@ -214,16 +218,22 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         }
     }
 
-    private fun speakInternal(text: String?, queueType: Int = QUEUE_ADD) {
+    private fun speakInternal(text: String, queueType: Int = QUEUE_ADD): SpeechChunk {
         if (tts == null || !hasInit) {
             throw Exception("Must call `start` and wait for init before trying to speak.")
         }
-        if (text != null) {
-            // val bundle: Bundle = Bundle()
-            // bundle.putFloat(Engine.KEY_PARAM_VOLUME, if (isMute) 0f else 1f)
-            val utteranceId = UUID.randomUUID().toString()
-            tts?.speak(text, queueType, null, utteranceId)
-        }
+
+        val strippedText = text.trim()
+        val trimmedAmount = text.length - strippedText.length
+
+        // Log.d("Speech", strippedText)
+
+        // val bundle: Bundle = Bundle()
+        // bundle.putFloat(Engine.KEY_PARAM_VOLUME, if (isMute) 0f else 1f)
+        val utteranceId = UUID.randomUUID().toString()
+        tts?.speak(strippedText, queueType, null, utteranceId)
+
+        return SpeechChunk(strippedText, utteranceId, trimmedAmount)
     }
 
     private fun onUtteranceStart() {
@@ -238,6 +248,12 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         }
     }
 
+    private fun onUtteranceProgress(utteranceId: String?, start: Int, end: Int) {
+        for (listener in listeners) {
+            listener.onSpeechProgress(utteranceId, start, end)
+        }
+    }
+
     private fun setVolume(volume: Int) {
         try {
             audioManager.setStreamVolume(STREAM_MUSIC, volume, 0)
@@ -247,7 +263,7 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
     }
 
     private fun findLastStopCharIndex(): Int {
-        val stopChars = arrayOf('.', ':', '!', '?')
+        val stopChars = arrayOf('.', ':', '!', '?', '\n')
         var lastStopCharIndex = -1
         for (char in stopChars) {
             val lastIndex = queuedSpeech.lastIndexOf(char)

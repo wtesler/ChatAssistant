@@ -1,11 +1,15 @@
 package tesler.will.chatassistant._components.chat
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import tesler.will.chatassistant._components.markdown.MarkdownText
 import tesler.will.chatassistant._components.preview.Previews
@@ -31,18 +35,34 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
     val vPadding = AppTheme.dimens.xlarge
 
     if (chatModel.text.isNotBlank()) {
+        val text = chatModel.text
+        val modifiedText = text
+//        if (highlightModel != null && highlightModel.start != -1) {
+//            val highlightStartIndex = highlightModel.start
+//            val highlightEndIndex = highlightModel.end
+//            val innerText = text.subSequence(highlightStartIndex, highlightEndIndex)
+//            val stringBuilder = StringBuilder()
+//            stringBuilder.append(text.subSequence(0, highlightStartIndex))
+//            stringBuilder.append("<u>")
+//            stringBuilder.append(innerText)
+//            stringBuilder.append("</u>")
+//            stringBuilder.append(text.subSequence(highlightEndIndex, text.length))
+//            modifiedText = stringBuilder.toString()
+//        }
+
         Box(
             modifier = modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(backgroundColor)
                 .padding(hPadding, vPadding),
-            contentAlignment = Center
+            contentAlignment = CenterStart
         ) {
             MarkdownText(
-                modifier = Modifier.wrapContentWidth(),
-                markdown = chatModel.text,
-                style = AppTheme.type.body1
+                modifier = Modifier.fillMaxWidth(),
+                markdown = modifiedText,
+                style = AppTheme.type.body1,
+                textAlign = TextAlign.Start
             )
         }
     }

@@ -27,17 +27,12 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
     }
 
     override fun addChat(chatModel: ChatModel) {
-        for (chat in chats) {
-            if (chat.id == chatModel.id) {
-                throw Exception("Cannot add chat because it already exists.")
-            }
-        }
+        chatModel.setId()
+        val chatCopy = chatModel.copy()
+        chats.add(chatCopy)
 
-        val chat = chatModel.copy()
-
-        chats.add(chat)
         for (listener in listeners) {
-            listener.onChatAdded(chat)
+            listener.onChatAdded(chatCopy)
             listener.onNumChatsChanged(chats.size)
         }
     }
@@ -113,12 +108,13 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
 
             val inputText = chatModel.text
             val inputChat = chatModel.copy(text = "")
-            val inputChatId = inputChat.id
             var hasUpdatedInputChat = false
             addChat(inputChat)
+            val inputChatId = inputChat.id
 
             val responseChat = ChatModel("", CREATED, false)
             addChat(responseChat)
+            val responseChatId = responseChat.id
 
             var message = ""
             var isSuccess = false
@@ -165,7 +161,7 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
                 message = "Cancellation Occurred."
                 isSuccess = false
                 removeChat(inputChatId)
-                removeChat(responseChat.id)
+                removeChat(responseChatId)
             } finally {
                 for (listener in listeners) {
                     listener.onChatSubmitResponse(isSuccess, message)

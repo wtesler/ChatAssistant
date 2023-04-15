@@ -12,6 +12,7 @@ import tesler.will.chatassistant._components.settings.SettingsScreen
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
+import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.SpeechChunk
 import tesler.will.chatassistant.stack.BackStackManager
 import tesler.will.chatassistant.stack.State
 import tesler.will.chatassistant.stack.State.MAIN
@@ -39,7 +40,7 @@ fun Main(activity: Activity?) {
 
     val speechOutputListener = remember {
         object : ISpeechOutputManager.Listener {
-            override fun onTtsReady() {
+            override fun onTtsReady(chunk: SpeechChunk?) {
                 scope.launch {
                     settingsService.observeSettings().collect { settings ->
                         val voice = settings.voice

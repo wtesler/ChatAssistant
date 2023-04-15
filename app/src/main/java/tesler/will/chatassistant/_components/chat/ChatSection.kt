@@ -24,10 +24,13 @@ import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant._components.shadow.ElevationShadow
 import tesler.will.chatassistant._components.shadow.OverflowShadow
 import tesler.will.chatassistant.chat.ChatModel
+import tesler.will.chatassistant.chat.ChatModel.State.ERROR
+import tesler.will.chatassistant.chat.HighlightModel
 import tesler.will.chatassistant.chat.IChatManager
 import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
+import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.SpeechChunk
 
 @Composable
 fun ChatSection() {
@@ -36,6 +39,8 @@ fun ChatSection() {
     val speechOutputManager = koinInject<ISpeechOutputManager>()
 
     val chats = remember { mutableStateListOf<ChatModel>() }
+    val activeChunks = remember { mutableStateListOf<SpeechChunk>() }
+    var highlightModel by remember { mutableStateOf(HighlightModel()) }
     var height by remember { mutableStateOf(0) }
     var hasManuallyInterfered by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
@@ -82,6 +87,10 @@ fun ChatSection() {
         }
     }
 
+    fun clearHighlights() {
+        highlightModel = HighlightModel()
+    }
+
     val chatListener = remember {
         object : IChatManager.Listener {
             override fun onChatAdded(chatModel: ChatModel) {
@@ -106,21 +115,27 @@ fun ChatSection() {
             }
 
             override fun onErrorChatsCleared() {
-                chats.removeIf { chat -> chat.state == ChatModel.State.ERROR }
+                chats.removeIf { chat -> chat.state == ERROR }
             }
 
             override fun onChatSubmitResponseStarted() {
                 hasManuallyInterfered = false
+                activeChunks.clear()
+                clearHighlights()
             }
 
             override fun onChatSubmitResponsePartial(value: String) {
-                speechOutputManager.queueSpeech(value)
+                val chunk = speechOutputManager.queueSpeech(value)
+                if (chunk != null) {
+                    activeChunks.add(chunk)
+                }
                 scrollToLastItem(0f)
             }
 
             override fun onChatSubmitResponse(isSuccess: Boolean, value: String?) {
                 if (isSuccess && value != null) {
-                    speechOutputManager.flushSpeech()
+                    val chunk = speechOutputManager.flushSpeech()
+                    activeChunks.add(chunk)
                 }
             }
         }
@@ -142,9 +157,44 @@ fun ChatSection() {
         }
     }
 
+    val speechOutputListener = remember {
+        object : ISpeechOutputManager.Listener {
+            override fun onTtsReady(chunk: SpeechChunk?) {
+                if (chunk != null) {
+                    activeChunks.add(chunk)
+                }
+            }
+
+            override fun onSpeechProgress(utteranceId: String?, start: Int, end: Int) {
+                if (utteranceId == null) {
+                    return
+                }
+                var startIndex = 0
+                var endIndex = 0
+                for (chunk in activeChunks) {
+                    if (chunk.utteranceId != utteranceId) {
+                        startIndex += chunk.text.length + chunk.trimmedAmount
+                    } else {
+                        startIndex += chunk.trimmedAmount
+                        endIndex = startIndex + end
+                        startIndex += start
+                        break
+                    }
+                }
+
+                highlightModel = highlightModel.copy(start=startIndex, end=endIndex)
+            }
+
+            override fun onSpeechEnded() {
+                clearHighlights()
+            }
+        }
+    }
+
     DisposableEffect(Unit) {
         chatManager.addListener(chatListener)
         speechInputManager.addListener(speechInputListener)
+        speechOutputManager.addListener(speechOutputListener)
 
         for (chat in chatManager.getChats()) {
             chats.add(chat)
@@ -153,6 +203,7 @@ fun ChatSection() {
         onDispose {
             chatManager.removeListener(chatListener)
             speechInputManager.removeListener(speechInputListener)
+            speechOutputManager.removeListener(speechOutputListener)
         }
     }
 
@@ -169,7 +220,7 @@ fun ChatSection() {
                 .pointerInput("scroll") {
                     detectVerticalDragGestures(
                         onDragStart = { preventAutoScroll() },
-                        onVerticalDrag = {_, _ -> preventAutoScroll() }
+                        onVerticalDrag = { _, _ -> preventAutoScroll() }
                     )
                 }
                 .pointerInput("tap_input") {
@@ -191,6 +242,11 @@ fun ChatSection() {
             items(chats) { chat ->
                 Chat(Modifier, chat)
             }
+
+//            itemsIndexed(chats) { index, chat ->
+//                val highlight = if (index == chats.size - 1) highlightModel else null
+//                Chat(Modifier, chat, highlight)
+//            }
         }
 
         val shadowColor = Color(0x60000000)

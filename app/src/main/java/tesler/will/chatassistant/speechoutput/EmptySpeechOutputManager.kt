@@ -1,6 +1,7 @@
 package tesler.will.chatassistant.speechoutput
 
 import android.speech.tts.Voice
+import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.SpeechChunk
 import java.util.Locale
 
 class EmptySpeechOutputManager : ISpeechOutputManager {
@@ -23,7 +24,8 @@ class EmptySpeechOutputManager : ISpeechOutputManager {
     override fun removeListener(listener: ISpeechOutputManager.Listener) {
     }
 
-    override fun queueSpeech(text: String) {
+    override fun queueSpeech(text: String): SpeechChunk {
+        return SpeechChunk("", "", 0)
     }
 
     override fun speak(text: String, queueType: Int) {
@@ -33,7 +35,8 @@ class EmptySpeechOutputManager : ISpeechOutputManager {
         return false
     }
 
-    override fun flushSpeech() {
+    override fun flushSpeech(): SpeechChunk {
+        return SpeechChunk("", "", 0)
     }
 
     override fun setMuted(isMuted: Boolean) {
