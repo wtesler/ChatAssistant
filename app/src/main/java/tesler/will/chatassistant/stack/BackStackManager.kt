@@ -1,17 +1,23 @@
 package tesler.will.chatassistant.stack
 
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
+import tesler.will.chatassistant.stack.IBackStackManager.Listener
 import java.util.*
 
-enum class State {
-    MAIN, SETTINGS
-}
-
-class BackStackManager {
+class BackStackManager: IBackStackManager {
     private val stack = Stack<State>()
+
+    private lateinit var activity: ComponentActivity
 
     private val listeners = mutableListOf<Listener>()
 
-    fun push(state: State) {
+    override fun init(componentActivity: ComponentActivity) {
+        activity = componentActivity
+        activity.onBackPressedDispatcher.addCallback(activity, onBackPressedCallback)
+    }
+
+    override fun push(state: State) {
         if (!empty() && state == stack.peek()) {
             return
         }
@@ -21,7 +27,7 @@ class BackStackManager {
         }
     }
 
-    fun pop() {
+    override fun pop() {
         if (empty()) {
             return
         }
@@ -33,23 +39,33 @@ class BackStackManager {
         }
     }
 
-    fun empty(): Boolean {
+    override fun empty(): Boolean {
         return stack.empty()
     }
 
-    fun addListener(listener: Listener) {
+    override fun addListener(listener: Listener) {
         listeners.add(listener)
         if (!empty()) {
             listener.onBackStackChange(stack.peek())
         }
     }
 
-    fun removeListener(listener: Listener) {
+    override fun removeListener(listener: Listener) {
         listeners.remove(listener)
     }
 
-    interface Listener {
-        fun onBackStackChange(state: State)
+    override fun setEnabled(isEnabled: Boolean) {
+        onBackPressedCallback.isEnabled = isEnabled
+    }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            pop()
+            if (empty()) {
+                isEnabled = false
+                activity.finish()
+            }
+        }
     }
 }
 

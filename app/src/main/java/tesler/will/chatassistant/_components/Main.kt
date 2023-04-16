@@ -14,6 +14,7 @@ import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager.SpeechChunk
 import tesler.will.chatassistant.stack.BackStackManager
+import tesler.will.chatassistant.stack.IBackStackManager
 import tesler.will.chatassistant.stack.State
 import tesler.will.chatassistant.stack.State.MAIN
 import tesler.will.chatassistant.stack.State.SETTINGS
@@ -24,14 +25,14 @@ fun Main(activity: Activity?) {
     val speechInputManager = koinInject<ISpeechInputManager>()
     val speechOutputManager = koinInject<ISpeechOutputManager>()
     val settingsService = koinInject<ISettingsService>()
-    val backStackManager = koinInject<BackStackManager>()
+    val backStackManager = koinInject<IBackStackManager>()
 
     var backStackState by remember { mutableStateOf(MAIN) }
 
     val scope = rememberCoroutineScope()
 
     val backStackListener = remember {
-        object : BackStackManager.Listener {
+        object : IBackStackManager.Listener {
             override fun onBackStackChange(state: State) {
                 backStackState = state
             }

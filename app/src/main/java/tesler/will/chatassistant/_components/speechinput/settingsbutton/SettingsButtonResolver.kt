@@ -10,6 +10,7 @@ import tesler.will.chatassistant.modules.main.mainTestModule
 import tesler.will.chatassistant.speechinput.ISpeechInputManager
 import tesler.will.chatassistant.speechoutput.ISpeechOutputManager
 import tesler.will.chatassistant.stack.BackStackManager
+import tesler.will.chatassistant.stack.IBackStackManager
 import tesler.will.chatassistant.stack.State
 
 @Composable
@@ -17,7 +18,7 @@ fun SettingsButtonResolver(modifier: Modifier) {
     val chatManager = koinInject<IChatManager>()
     val speechInputManager = koinInject<ISpeechInputManager>()
     val speechOutputManager = koinInject<ISpeechOutputManager>()
-    val backStackManager = koinInject<BackStackManager>()
+    val backStackManager = koinInject<IBackStackManager>()
 
     var isExpanded by remember { mutableStateOf(false) }
 
