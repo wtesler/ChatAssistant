@@ -30,7 +30,7 @@ fun SpeechSubmitButton(onClick: () -> Unit) {
                 onClick = onClick
             ),
         painter = painterResource(id = R.drawable.submit),
-        contentDescription = "Submit Button",
+        contentDescription = "Submit",
         colorFilter = tint(AppTheme.colors.iconPrimary)
     )
 }
