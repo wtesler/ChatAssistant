@@ -7,7 +7,7 @@ import retrofit2.http.Streaming
 import tesler.will.chatassistant.server.models.chat.ChatUpdateRequest
 
 interface ApiService {
-    @POST("updateChatOpen")
+    @POST("updateChatAuthorized")
     @Streaming
     suspend fun updateChat(@Body request: ChatUpdateRequest): ResponseBody
 }

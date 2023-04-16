@@ -17,6 +17,7 @@ fun Auth(activity: ComponentActivity, content: @Composable () -> Unit) {
 
     var isAuthed by remember { mutableStateOf(false) }
     var hasAuthFailed by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     val authListener = remember {
         object : IAuthManager.Listener {
@@ -42,8 +43,9 @@ fun Auth(activity: ComponentActivity, content: @Composable () -> Unit) {
         val auth = Firebase.auth
         if (auth.currentUser != null) {
             isAuthed = true
+            authManager.fetchIdToken(scope)
         } else {
-            authManager.beginSignIn()
+            authManager.beginSignIn(scope)
         }
     }
 

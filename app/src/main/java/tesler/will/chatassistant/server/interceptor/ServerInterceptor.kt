@@ -4,12 +4,21 @@ import android.net.TrafficStats
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.json.JSONObject
+import tesler.will.chatassistant.auth.IAuthManager
 
-class ServerInterceptor : Interceptor {
+class ServerInterceptor(private val authManager: IAuthManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         TrafficStats.setThreadStatsTag(Thread.currentThread().id.toInt())
 
-        val req = chain.request()
+
+        var reqBuilder = chain.request().newBuilder()
+
+        val idToken = authManager.getIdToken()
+        if (idToken != null) {
+            reqBuilder = reqBuilder.header("Authorization", "Bearer $idToken")
+        }
+
+        val req = reqBuilder.build()
 
         var response = chain.proceed(req)
 
