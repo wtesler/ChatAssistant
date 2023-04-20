@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import tesler.will.chatassistant.R
 import tesler.will.chatassistant._components.markdown.MarkdownText
 import tesler.will.chatassistant._components.preview.Previews
 import tesler.will.chatassistant.chat.ChatModel
@@ -62,6 +63,7 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
                 modifier = Modifier.fillMaxWidth(),
                 markdown = modifiedText,
                 style = AppTheme.type.body1,
+                fontResource = R.font.mona_sans,
                 textAlign = TextAlign.Start
             )
         }

@@ -1,20 +1,25 @@
 package tesler.will.chatassistant.theme
 
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.sp
+import tesler.will.chatassistant.R
 
 val typography = AppTypography(
     body1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
+        fontFamily = FontFamily(Font(R.font.mona_sans)),
+        fontWeight = FontWeight.W500,
         fontSize = 18.sp,
-        lineHeight = 24.sp
+        lineHeight = 30.sp,
+        letterSpacing = TextUnit(.03f, TextUnitType.Em)
     ),
     option1 = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Light,
+        fontFamily = FontFamily(Font(R.font.mona_sans)),
+        fontWeight = FontWeight.W200,
         fontSize = 15.sp,
     ),
 )
