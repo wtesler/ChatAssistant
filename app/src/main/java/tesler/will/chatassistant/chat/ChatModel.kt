@@ -16,6 +16,7 @@ data class ChatModel(
     }
 
     /**
+     * Sets the id for the chat.
      * This should only be called from within the Chat Manager.
      */
     fun setId() {

@@ -1,6 +1,8 @@
 package tesler.will.chatassistant.chat
 
 import kotlinx.coroutines.CoroutineScope
+import java.util.*
+import kotlin.collections.ArrayList
 
 class EmptyChatManager : IChatManager {
     override fun getChats(): ArrayList<ChatModel> {
@@ -11,7 +13,8 @@ class EmptyChatManager : IChatManager {
         return 0
     }
 
-    override fun addChat(chatModel: ChatModel) {
+    override fun addChat(chatModel: ChatModel): String {
+        return UUID.randomUUID().toString()
     }
 
     override fun removeChat(chatId: String) {

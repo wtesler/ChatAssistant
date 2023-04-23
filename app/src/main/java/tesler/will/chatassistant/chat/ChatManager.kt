@@ -26,7 +26,7 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
         return chats.size
     }
 
-    override fun addChat(chatModel: ChatModel) {
+    override fun addChat(chatModel: ChatModel): String {
         chatModel.setId()
         val chatCopy = chatModel.copy()
         chats.add(chatCopy)
@@ -35,6 +35,8 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
             listener.onChatAdded(chatCopy)
             listener.onNumChatsChanged(chats.size)
         }
+
+        return chatModel.id
     }
 
     override fun removeChat(chatId: String) {
@@ -108,16 +110,15 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
 
             val inputText = chatModel.text
             val inputChat = chatModel.copy(text = "")
-            var hasUpdatedInputChat = false
-            addChat(inputChat)
-            val inputChatId = inputChat.id
+            val inputChatId = addChat(inputChat)
 
             val responseChat = ChatModel("", CREATED, false)
-            addChat(responseChat)
-            val responseChatId = responseChat.id
+            val responseChatId = addChat(responseChat)
 
             var message = ""
             var isSuccess = false
+            var hasResponseStarted = false
+
             try {
                 apiService.updateChat(ChatUpdateRequest.build(chatsCopy))
                     .stream()
@@ -126,10 +127,10 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
                     .collect { string ->
                         responseChat.text += string
                         updateChat(responseChat)
-                        if (!hasUpdatedInputChat && responseChat.text.isNotEmpty()) {
+                        if (!hasResponseStarted && responseChat.text.isNotEmpty()) {
                             inputChat.text = inputText
                             updateChat(inputChat)
-                            hasUpdatedInputChat = true
+                            hasResponseStarted = true
                             for (listener in listeners) {
                                 listener.onChatSubmitResponseStarted()
                             }
@@ -146,23 +147,23 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
             } catch (e: HttpException) {
                 message = "${e.code()}: ${e.message()}"
                 isSuccess = false
-                removeChat(inputChatId)
                 responseChat.text = message
                 responseChat.state = ERROR
                 updateChat(responseChat)
             } catch (e: SocketTimeoutException) {
                 message = "Error Timeout."
                 isSuccess = false
-                removeChat(inputChatId)
                 responseChat.text = message
                 responseChat.state = ERROR
                 updateChat(responseChat)
             } catch (e: CancellationException) {
                 message = "Cancellation Occurred."
                 isSuccess = false
-                removeChat(inputChatId)
                 removeChat(responseChatId)
             } finally {
+                if (!isSuccess) {
+                    removeChat(inputChatId)
+                }
                 for (listener in listeners) {
                     listener.onChatSubmitResponse(isSuccess, message)
                 }

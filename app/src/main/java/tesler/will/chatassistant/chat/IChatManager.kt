@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 interface IChatManager {
     fun getChats(): ArrayList<ChatModel>
     fun numChats(): Int
-    fun addChat(chatModel: ChatModel)
+    fun addChat(chatModel: ChatModel): String
     fun removeChat(chatId: String)
     fun updateChat(chatModel: ChatModel)
     fun clearChats()
