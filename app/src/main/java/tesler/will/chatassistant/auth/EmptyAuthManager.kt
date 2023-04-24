@@ -10,11 +10,8 @@ class EmptyAuthManager : IAuthManager {
     override fun beginSignIn(scope: CoroutineScope) {
     }
 
-    override fun getIdToken(): String {
+    override suspend fun fetchIdToken(): String {
         return ""
-    }
-
-    override fun fetchIdToken(scope: CoroutineScope) {
     }
 
     override fun addListener(listener: IAuthManager.Listener) {

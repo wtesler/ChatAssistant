@@ -40,12 +40,10 @@ fun Auth(activity: ComponentActivity, content: @Composable () -> Unit) {
     }
 
     LaunchedEffect(Unit) {
-        val auth = Firebase.auth
-        if (auth.currentUser != null) {
-            isAuthed = true
-            authManager.fetchIdToken(scope)
-        } else {
+        if (Firebase.auth.currentUser == null) {
             authManager.beginSignIn(scope)
+        } else {
+            authListener.onAuthSuccess()
         }
     }
 

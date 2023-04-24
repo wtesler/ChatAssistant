@@ -103,9 +103,15 @@ class ChatManager(private val apiService: ApiService) : IChatManager {
         submitJob = scope.launch {
             var chatsCopy = ArrayList(chats)
             chatsCopy.add(chatModel)
-            if (chatsCopy.size > 20) {
+            val MAX_CHAT_LENGTH = 6
+            if (chatsCopy.size > MAX_CHAT_LENGTH) {
                 chatsCopy =
-                    chatsCopy.subList(chatsCopy.size - 20, chatsCopy.size) as ArrayList<ChatModel>
+                    ArrayList(
+                        chatsCopy.subList(
+                            chatsCopy.size - MAX_CHAT_LENGTH,
+                            chatsCopy.size
+                        )
+                    )
             }
 
             val inputText = chatModel.text

@@ -16,7 +16,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant.auth.IAuthManager.Listener
@@ -26,7 +25,6 @@ class AuthManager : IAuthManager {
     private lateinit var launcher: ActivityResultLauncher<IntentSenderRequest>
     private lateinit var oneTapClient: SignInClient
     private lateinit var scope: CoroutineScope
-    private var idToken: String? = null
 
     private val listeners = mutableListOf<Listener>()
 
@@ -74,21 +72,14 @@ class AuthManager : IAuthManager {
             }
     }
 
-    override fun getIdToken(): String? {
-        return idToken
-    }
-
-    override fun fetchIdToken(scope: CoroutineScope) {
-        scope.launch {
-            val token = Firebase.auth.currentUser!!.getIdToken(false)
-            val tokenResult = token.await()
-            idToken = tokenResult.token!!
-        }
+    override suspend fun fetchIdToken(): String {
+        val token = Firebase.auth.currentUser!!.getIdToken(false)
+        val tokenResult = token.await()
+        return tokenResult.token!!
     }
 
     override fun addListener(listener: Listener) {
         listeners.add(listener)
-
     }
 
     override fun removeListener(listener: Listener) {
@@ -109,7 +100,6 @@ class AuthManager : IAuthManager {
                             .addOnCompleteListener(activity) { task ->
                                 if (task.isSuccessful) {
                                     emitSuccess()
-                                    fetchIdToken(scope)
                                 } else {
                                     Log.e("Auth", "signInWithCredential:failure", task.exception)
                                     emitFailure()

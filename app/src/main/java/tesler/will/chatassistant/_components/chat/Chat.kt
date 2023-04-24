@@ -1,12 +1,9 @@
 package tesler.will.chatassistant._components.chat
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.CenterStart
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -57,10 +54,10 @@ fun Chat(modifier: Modifier, chatModel: ChatModel) {
                 .wrapContentHeight()
                 .background(backgroundColor)
                 .padding(hPadding, vPadding),
-            contentAlignment = CenterStart
+            contentAlignment = Center
         ) {
             MarkdownText(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.wrapContentWidth(),
                 markdown = modifiedText,
                 style = AppTheme.type.body1,
                 fontResource = R.font.mona_sans,
