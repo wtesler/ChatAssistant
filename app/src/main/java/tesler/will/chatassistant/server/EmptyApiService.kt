@@ -8,4 +8,8 @@ class EmptyApiService : ApiService {
     override suspend fun updateChat(request: ChatUpdateRequest): ResponseBody {
         return ResponseBody.create(MediaType.get("text/plain"), "Test Message")
     }
+
+    override suspend fun warmup(): ResponseBody {
+        return ResponseBody.create(MediaType.get("text/plain"), "Test Response")
+    }
 }

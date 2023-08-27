@@ -1,6 +1,7 @@
 package tesler.will.chatassistant._components
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ import tesler.will.chatassistant.stack.State
 import tesler.will.chatassistant.stack.State.MAIN
 import tesler.will.chatassistant.stack.State.SETTINGS
 import tesler.will.chatassistant.store.ISettingsService
+import tesler.will.chatassistant.warmup.IWarmupManager
 
 @Composable
 fun Main(activity: Activity?) {
@@ -26,6 +28,7 @@ fun Main(activity: Activity?) {
     val speechOutputManager = koinInject<ISpeechOutputManager>()
     val settingsService = koinInject<ISettingsService>()
     val backStackManager = koinInject<IBackStackManager>()
+    val warmupManager = koinInject<IWarmupManager>()
 
     var backStackState by remember { mutableStateOf(MAIN) }
 
@@ -62,6 +65,14 @@ fun Main(activity: Activity?) {
     DisposableEffect(Unit) {
         speechOutputManager.addListener(speechOutputListener)
         backStackManager.addListener(backStackListener)
+
+        scope.launch {
+            try {
+                warmupManager.warmup()
+            } catch (e: Exception) {
+                Log.e("Warmup Error", e.message, e)
+            }
+        }
 
         speechInputManager.init()
         speechOutputManager.init()

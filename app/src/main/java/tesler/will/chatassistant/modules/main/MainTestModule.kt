@@ -10,6 +10,8 @@ import tesler.will.chatassistant.stack.BackStackManager
 import tesler.will.chatassistant.stack.IBackStackManager
 import tesler.will.chatassistant.store.EmptySettingsService
 import tesler.will.chatassistant.store.ISettingsService
+import tesler.will.chatassistant.warmup.EmptyWarmupManager
+import tesler.will.chatassistant.warmup.IWarmupManager
 
 val mainTestModule = module {
     includes(speechTestModule, chatModule, serverTestModule)
@@ -17,4 +19,5 @@ val mainTestModule = module {
     single<ISettingsService> { EmptySettingsService() }
     single<IBackStackManager> { BackStackManager() }
     single<IAuthManager> { EmptyAuthManager() }
+    single<IWarmupManager> { EmptyWarmupManager() }
 }

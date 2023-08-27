@@ -14,3 +14,7 @@ Add `secure-strings.xml` to values folder and make it look like this:
     <string name="server_client_oauth_id">OAUTH_CLIENT_ID_RETRIEVED_FROM_CREDENTIALS</string>
 </resources>
 ```
+
+Internal Test URL:
+
+https://play.google.com/apps/internaltest/4701648025114892834
