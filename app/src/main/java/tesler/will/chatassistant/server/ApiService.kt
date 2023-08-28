@@ -11,6 +11,6 @@ interface ApiService {
     @Streaming
     suspend fun updateChat(@Body request: ChatUpdateRequest): ResponseBody
 
-    @POST("warmupOpen")
+    @POST("warmupAuthorized")
     suspend fun warmup(): ResponseBody
 }

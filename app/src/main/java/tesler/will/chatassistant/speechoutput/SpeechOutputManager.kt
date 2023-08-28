@@ -123,19 +123,19 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
             return null
         }
 
-        val lastStopCharIndex = findLastStopCharIndex()
+        val lastStopStrIndex = findLastStopStrIndex()
 
-        if (lastStopCharIndex <= 0) {
+        if (lastStopStrIndex <= 0) {
             return null
         }
 
-        val speechEndIndex = lastStopCharIndex + 1
+        val speechEndIndex = lastStopStrIndex + 1
 
         val speech = queuedSpeech.substring(0, speechEndIndex)
 
         val speechChunk = speakInternal(speech)
 
-        if (lastStopCharIndex < queuedSpeech.length - 1) {
+        if (lastStopStrIndex < queuedSpeech.length - 1) {
             queuedSpeech = queuedSpeech.substring(speechEndIndex, queuedSpeech.length)
         } else {
             queuedSpeech = ""
@@ -262,13 +262,13 @@ class SpeechOutputManager(private val context: Context) : ISpeechOutputManager, 
         }
     }
 
-    private fun findLastStopCharIndex(): Int {
-        val stopChars = arrayOf('.', ':', '!', '?', '\n')
-        var lastStopCharIndex = -1
-        for (char in stopChars) {
-            val lastIndex = queuedSpeech.lastIndexOf(char)
-            lastStopCharIndex = maxOf(lastStopCharIndex, lastIndex)
+    private fun findLastStopStrIndex(): Int {
+        val stopStrings = arrayOf(". ", ":", "!", "?", "\n")
+        var lastStopStrIndex = -1
+        for (str in stopStrings) {
+            val lastIndex = queuedSpeech.lastIndexOf(str)
+            lastStopStrIndex = maxOf(lastStopStrIndex, lastIndex)
         }
-        return lastStopCharIndex
+        return lastStopStrIndex
     }
 }

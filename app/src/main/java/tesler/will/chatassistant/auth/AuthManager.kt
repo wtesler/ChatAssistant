@@ -19,6 +19,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.tasks.await
 import tesler.will.chatassistant.R
 import tesler.will.chatassistant.auth.IAuthManager.Listener
+import java.time.LocalTime
+import java.util.Date
 
 class AuthManager : IAuthManager {
     private lateinit var activity: ComponentActivity
@@ -27,6 +29,9 @@ class AuthManager : IAuthManager {
     private lateinit var scope: CoroutineScope
 
     private val listeners = mutableListOf<Listener>()
+
+    private var cachedIdToken: String? = null;
+    private var cachedIdTokenExpiryTime: LocalTime? = null;
 
     override fun init(componentActivity: ComponentActivity) {
         activity = componentActivity
@@ -73,9 +78,22 @@ class AuthManager : IAuthManager {
     }
 
     override suspend fun fetchIdToken(): String {
+        val currentTime = LocalTime.now()
+
+        if (cachedIdToken != null
+            && cachedIdTokenExpiryTime != null
+            && currentTime < cachedIdTokenExpiryTime) {
+            return cachedIdToken!!
+        }
+
         val token = Firebase.auth.currentUser!!.getIdToken(false)
         val tokenResult = token.await()
-        return tokenResult.token!!
+        val idToken = tokenResult.token!!
+
+        cachedIdToken = idToken
+        cachedIdTokenExpiryTime = currentTime.plusMinutes(10)
+
+        return idToken
     }
 
     override fun addListener(listener: Listener) {
